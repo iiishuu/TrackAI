@@ -4,6 +4,7 @@ import { ScoreCard } from "@/frontend/components/report/ScoreCard";
 import { MetricsGrid } from "@/frontend/components/report/MetricsGrid";
 import { QueryResultCard } from "@/frontend/components/report/QueryResultCard";
 import { RecommendationList } from "@/frontend/components/report/RecommendationList";
+import { getServerDictionary } from "@/shared/i18n/server";
 import type { Report } from "@/shared/types";
 
 interface ReportPageProps {
@@ -27,19 +28,23 @@ export async function generateMetadata({
   params,
 }: ReportPageProps): Promise<Metadata> {
   const { id } = await params;
-  const report = await getReport(id);
+  const [report, t] = await Promise.all([getReport(id), getServerDictionary()]);
   if (!report) {
-    return { title: "Report Not Found — TrackAI" };
+    return { title: t.meta.reportNotFound };
   }
   return {
-    title: `${report.domain} — AI Visibility Report — TrackAI`,
-    description: `AI visibility score: ${Math.round(report.metrics.visibilityScore)}/100 for ${report.domain} in ${report.sector}.`,
+    title: t.meta.reportTitle(report.domain),
+    description: t.meta.reportDescription(
+      Math.round(report.metrics.visibilityScore),
+      report.domain,
+      report.sector
+    ),
   };
 }
 
 export default async function ReportPage({ params }: ReportPageProps) {
   const { id } = await params;
-  const report = await getReport(id);
+  const [report, t] = await Promise.all([getReport(id), getServerDictionary()]);
 
   if (!report) {
     notFound();
@@ -52,28 +57,31 @@ export default async function ReportPage({ params }: ReportPageProps) {
           score={report.metrics.visibilityScore}
           domain={report.domain}
           sector={report.sector}
+          t={t}
         />
       </section>
 
       <section>
-        <h2 className="mb-4 text-xl font-semibold">Metrics</h2>
-        <MetricsGrid metrics={report.metrics} />
+        <h2 className="mb-4 text-xl font-semibold">{t.report.metrics}</h2>
+        <MetricsGrid metrics={report.metrics} t={t} />
       </section>
 
       <section>
         <h2 className="mb-4 text-xl font-semibold">
-          AI Responses ({report.queryResults.length})
+          {t.report.aiResponses} ({report.queryResults.length})
         </h2>
         <div className="space-y-3">
           {report.queryResults.map((result, index) => (
-            <QueryResultCard key={index} result={result} />
+            <QueryResultCard key={index} result={result} t={t} />
           ))}
         </div>
       </section>
 
       <section>
-        <h2 className="mb-4 text-xl font-semibold">Recommendations</h2>
-        <RecommendationList recommendations={report.recommendations} />
+        <h2 className="mb-4 text-xl font-semibold">
+          {t.report.recommendations}
+        </h2>
+        <RecommendationList recommendations={report.recommendations} t={t} />
       </section>
     </main>
   );

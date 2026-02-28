@@ -6,9 +6,11 @@ import {
 } from "@/frontend/components/ui/card";
 import { Badge } from "@/frontend/components/ui/badge";
 import type { Recommendation } from "@/shared/types";
+import type { Dictionary } from "@/shared/i18n/types";
 
 interface RecommendationListProps {
   recommendations: Recommendation[];
+  t: Dictionary;
 }
 
 function priorityVariant(
@@ -35,8 +37,14 @@ function priorityOrder(priority: string): number {
   }
 }
 
+function translatePriority(priority: string, t: Dictionary): string {
+  const key = priority as keyof typeof t.labels;
+  return t.labels[key] ?? priority;
+}
+
 export function RecommendationList({
   recommendations,
+  t,
 }: RecommendationListProps) {
   const sorted = [...recommendations].sort(
     (a, b) => priorityOrder(a.priority) - priorityOrder(b.priority)
@@ -52,7 +60,7 @@ export function RecommendationList({
                 {rec.title}
               </CardTitle>
               <Badge variant={priorityVariant(rec.priority)}>
-                {rec.priority}
+                {translatePriority(rec.priority, t)}
               </Badge>
             </div>
           </CardHeader>

@@ -6,9 +6,11 @@ import {
 } from "@/frontend/components/ui/card";
 import { Badge } from "@/frontend/components/ui/badge";
 import type { QueryResult } from "@/shared/types";
+import type { Dictionary } from "@/shared/i18n/types";
 
 interface QueryResultCardProps {
   result: QueryResult;
+  t: Dictionary;
 }
 
 function sentimentVariant(
@@ -24,7 +26,12 @@ function sentimentVariant(
   }
 }
 
-export function QueryResultCard({ result }: QueryResultCardProps) {
+function translateSentiment(sentiment: string, t: Dictionary): string {
+  const key = sentiment as keyof typeof t.labels;
+  return t.labels[key] ?? sentiment;
+}
+
+export function QueryResultCard({ result, t }: QueryResultCardProps) {
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -34,10 +41,10 @@ export function QueryResultCard({ result }: QueryResultCardProps) {
           </CardTitle>
           <div className="flex shrink-0 gap-1">
             <Badge variant={result.isPresent ? "default" : "outline"}>
-              {result.isPresent ? "Present" : "Absent"}
+              {result.isPresent ? t.labels.present : t.labels.absent}
             </Badge>
             <Badge variant={sentimentVariant(result.sentiment)}>
-              {result.sentiment}
+              {translateSentiment(result.sentiment, t)}
             </Badge>
           </div>
         </div>
@@ -48,7 +55,7 @@ export function QueryResultCard({ result }: QueryResultCardProps) {
         </p>
         {result.rank !== null && (
           <p className="text-xs text-muted-foreground">
-            Position: <span className="font-medium">#{result.rank}</span>
+            {t.report.position}: <span className="font-medium">#{result.rank}</span>
           </p>
         )}
         {result.competitors.length > 0 && (

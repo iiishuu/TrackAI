@@ -1,21 +1,24 @@
 "use client";
 
 import { Progress } from "@/frontend/components/ui/progress";
+import { useDictionary } from "@/frontend/components/providers/DictionaryProvider";
 import type { ScanStep } from "@/shared/types";
-
-const DEFAULT_STEPS: ScanStep[] = [
-  { label: "Domain validation", status: "done" },
-  { label: "Sector discovery", status: "running" },
-  { label: "AI query analysis", status: "pending" },
-  { label: "Score computation", status: "pending" },
-  { label: "Recommendations", status: "pending" },
-];
 
 interface ScanProgressProps {
   steps?: ScanStep[];
 }
 
-export function ScanProgress({ steps = DEFAULT_STEPS }: ScanProgressProps) {
+export function ScanProgress({ steps: stepsProp }: ScanProgressProps) {
+  const { t } = useDictionary();
+
+  const steps: ScanStep[] = stepsProp ?? [
+    { label: t.scanSteps.domainValidation, status: "done" },
+    { label: t.scanSteps.sectorDiscovery, status: "running" },
+    { label: t.scanSteps.aiQueryAnalysis, status: "pending" },
+    { label: t.scanSteps.scoreComputation, status: "pending" },
+    { label: t.scanSteps.recommendations, status: "pending" },
+  ];
+
   const completedCount = steps.filter((s) => s.status === "done").length;
   const progress = Math.round((completedCount / steps.length) * 100);
 

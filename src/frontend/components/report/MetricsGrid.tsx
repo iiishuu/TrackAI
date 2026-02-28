@@ -6,9 +6,11 @@ import {
 } from "@/frontend/components/ui/card";
 import { Badge } from "@/frontend/components/ui/badge";
 import type { Metrics } from "@/shared/types";
+import type { Dictionary } from "@/shared/i18n/types";
 
 interface MetricsGridProps {
   metrics: Metrics;
+  t: Dictionary;
 }
 
 function formatPercent(value: number): string {
@@ -28,7 +30,15 @@ function sentimentVariant(
   }
 }
 
-export function MetricsGrid({ metrics }: MetricsGridProps) {
+function translateSentiment(
+  sentiment: string,
+  t: Dictionary
+): string {
+  const key = sentiment as keyof typeof t.labels;
+  return t.labels[key] ?? sentiment;
+}
+
+export function MetricsGrid({ metrics, t }: MetricsGridProps) {
   const topCompetitors = Object.entries(metrics.shareOfVoice)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 3);
@@ -38,7 +48,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            Citation Rate
+            {t.metrics.citationRate}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -46,7 +56,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
             {formatPercent(metrics.citationRate)}
           </p>
           <p className="text-xs text-muted-foreground">
-            of AI responses mention you
+            {t.metrics.citationRateDesc}
           </p>
         </CardContent>
       </Card>
@@ -54,17 +64,17 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            Avg. Position
+            {t.metrics.avgPosition}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-2xl font-bold">
             {metrics.averagePosition !== null
               ? `#${metrics.averagePosition.toFixed(1)}`
-              : "N/A"}
+              : t.metrics.na}
           </p>
           <p className="text-xs text-muted-foreground">
-            when mentioned in results
+            {t.metrics.avgPositionDesc}
           </p>
         </CardContent>
       </Card>
@@ -72,15 +82,15 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            Sentiment
+            {t.metrics.sentiment}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Badge variant={sentimentVariant(metrics.overallSentiment)}>
-            {metrics.overallSentiment}
+            {translateSentiment(metrics.overallSentiment, t)}
           </Badge>
           <p className="mt-1 text-xs text-muted-foreground">
-            overall AI perception
+            {t.metrics.sentimentDesc}
           </p>
         </CardContent>
       </Card>
@@ -88,7 +98,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-sm font-medium text-muted-foreground">
-            Share of Voice
+            {t.metrics.shareOfVoice}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -107,7 +117,7 @@ export function MetricsGrid({ metrics }: MetricsGridProps) {
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-muted-foreground">No data</p>
+            <p className="text-sm text-muted-foreground">{t.metrics.noData}</p>
           )}
         </CardContent>
       </Card>

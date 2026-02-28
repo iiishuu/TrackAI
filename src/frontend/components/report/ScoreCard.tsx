@@ -4,11 +4,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/frontend/components/ui/card";
+import type { Dictionary } from "@/shared/i18n/types";
 
 interface ScoreCardProps {
   score: number;
   domain: string;
   sector: string;
+  t: Dictionary;
 }
 
 function getScoreColor(score: number): string {
@@ -17,13 +19,13 @@ function getScoreColor(score: number): string {
   return "text-red-500";
 }
 
-function getScoreLabel(score: number): string {
-  if (score >= 70) return "Good";
-  if (score >= 40) return "Average";
-  return "Low";
+function getScoreLabel(score: number, t: Dictionary): string {
+  if (score >= 70) return t.report.scoreGood;
+  if (score >= 40) return t.report.scoreAverage;
+  return t.report.scoreLow;
 }
 
-export function ScoreCard({ score, domain, sector }: ScoreCardProps) {
+export function ScoreCard({ score, domain, sector, t }: ScoreCardProps) {
   const roundedScore = Math.round(score);
   const circumference = 2 * Math.PI * 45;
   const strokeDashoffset = circumference - (roundedScore / 100) * circumference;
@@ -31,7 +33,7 @@ export function ScoreCard({ score, domain, sector }: ScoreCardProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-lg">AI Visibility Score</CardTitle>
+        <CardTitle className="text-lg">{t.report.visibilityScore}</CardTitle>
         <p className="text-sm text-muted-foreground">
           {domain} &middot; {sector}
         </p>
@@ -69,7 +71,7 @@ export function ScoreCard({ score, domain, sector }: ScoreCardProps) {
           </div>
         </div>
         <span className={`text-sm font-medium ${getScoreColor(roundedScore)}`}>
-          {getScoreLabel(roundedScore)}
+          {getScoreLabel(roundedScore, t)}
         </span>
       </CardContent>
     </Card>

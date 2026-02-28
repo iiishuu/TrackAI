@@ -5,12 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/frontend/components/ui/button";
 import { Input } from "@/frontend/components/ui/input";
 import { useScan } from "@/frontend/hooks/useScan";
+import { useDictionary } from "@/frontend/components/providers/DictionaryProvider";
 
 export function ScanForm() {
   const searchParams = useSearchParams();
   const [domain, setDomain] = useState(searchParams.get("domain") ?? "");
   const { scan, isLoading, error } = useScan();
   const router = useRouter();
+  const { t } = useDictionary();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -29,14 +31,14 @@ export function ScanForm() {
       <div className="flex gap-2">
         <Input
           type="text"
-          placeholder="example.com"
+          placeholder={t.scan.placeholder}
           value={domain}
           onChange={(e) => setDomain(e.target.value)}
           disabled={isLoading}
           className="flex-1"
         />
         <Button type="submit" disabled={isLoading || !domain.trim()}>
-          {isLoading ? "Analyzing..." : "Analyze"}
+          {isLoading ? t.scan.analyzing : t.scan.analyze}
         </Button>
       </div>
       {error && (
