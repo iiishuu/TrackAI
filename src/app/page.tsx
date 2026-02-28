@@ -1,12 +1,14 @@
+import { Hero } from "@/frontend/components/landing/Hero";
+import { HowItWorks } from "@/frontend/components/landing/HowItWorks";
+import { Footer } from "@/frontend/components/landing/Footer";
+
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <main className="flex flex-col items-center gap-6 text-center">
-        <h1 className="text-4xl font-bold tracking-tight">TrackAI</h1>
-        <p className="max-w-md text-lg text-zinc-600 dark:text-zinc-400">
-          Track your brand visibility across AI search engines.
-        </p>
-      </main>
+    <div className="flex min-h-[calc(100vh-3.5rem)] flex-col">
+      <Hero />
+      <HowItWorks />
+      <div className="flex-1" />
+      <Footer />
     </div>
   );
 }
