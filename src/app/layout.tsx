@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Navbar } from "@/frontend/components/layout/Navbar";
+import { DictionaryProvider } from "@/frontend/components/providers/DictionaryProvider";
+import {
+  getServerLocale,
+  getServerDictionary,
+} from "@/shared/i18n/server";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,24 +18,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "TrackAI — AI Visibility Tracker",
-  description:
-    "Track your brand visibility across AI search engines like ChatGPT, Gemini, and Perplexity.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getServerDictionary();
+  return {
+    title: t.meta.siteTitle,
+    description: t.meta.siteDescription,
+  };
+}
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getServerLocale();
+  const dictionary = await getServerDictionary();
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Navbar />
-        {children}
+        <DictionaryProvider dictionary={dictionary} locale={locale}>
+          <Navbar />
+          {children}
+        </DictionaryProvider>
       </body>
     </html>
   );

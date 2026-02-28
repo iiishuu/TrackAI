@@ -1,6 +1,10 @@
 import Link from "next/link";
+import { getServerDictionary } from "@/shared/i18n/server";
+import { LocaleSwitcher } from "./LocaleSwitcher";
 
-export function Navbar() {
+export async function Navbar() {
+  const t = await getServerDictionary();
+
   return (
     <nav className="border-b">
       <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
@@ -12,14 +16,15 @@ export function Navbar() {
             href="/scan"
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
-            Scan
+            {t.nav.scan}
           </Link>
           <Link
             href="/history"
             className="text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
-            History
+            {t.nav.history}
           </Link>
+          <LocaleSwitcher />
         </div>
       </div>
     </nav>
