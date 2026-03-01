@@ -63,15 +63,11 @@ vi.mock("@/backend/validation/domain", () => ({
 }));
 
 function createMockProvider(): AIProvider {
-  let callCount = 0;
-
   return {
     name: "mock",
-    query: vi.fn().mockImplementation(() => {
-      callCount++;
-
-      // Call 1: discovery
-      if (callCount === 1) {
+    query: vi.fn().mockImplementation(({ query }: { query: string }) => {
+      // Discovery prompt — contains "sector" and "competitors"
+      if (query.includes("sector") && query.includes("competitors")) {
         return Promise.resolve({
           content: JSON.stringify({
             sector: "SaaS",
@@ -83,18 +79,8 @@ function createMockProvider(): AIProvider {
         });
       }
 
-      // Interleaved: query1(2), analysis1(3), query2(4), analysis2(5)
-      // Even calls (2, 4) = raw query responses
-      if (callCount === 2 || callCount === 4) {
-        return Promise.resolve({
-          content: "Example.com is a great platform for building websites.",
-          sources: ["https://wiki.com"],
-          provider: "mock",
-        });
-      }
-
-      // Odd calls (3, 5) = analysis JSON responses
-      if (callCount === 3 || callCount === 5) {
+      // Analysis prompt — contains "Analyze the following AI response"
+      if (query.includes("Analyze the following AI response")) {
         return Promise.resolve({
           content: JSON.stringify({
             isPresent: true,
@@ -108,16 +94,25 @@ function createMockProvider(): AIProvider {
         });
       }
 
-      // Call 6: recommendations
+      // Recommendations prompt — contains "AI visibility expert"
+      if (query.includes("AI visibility expert")) {
+        return Promise.resolve({
+          content: JSON.stringify([
+            {
+              title: "Improve content",
+              description: "Create authoritative content.",
+              priority: "high",
+            },
+          ]),
+          sources: [],
+          provider: "mock",
+        });
+      }
+
+      // Default: raw query response (query execution step)
       return Promise.resolve({
-        content: JSON.stringify([
-          {
-            title: "Improve content",
-            description: "Create authoritative content.",
-            priority: "high",
-          },
-        ]),
-        sources: [],
+        content: "Example.com is a great platform for building websites.",
+        sources: ["https://wiki.com"],
         provider: "mock",
       });
     }),

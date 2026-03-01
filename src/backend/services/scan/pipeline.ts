@@ -67,20 +67,26 @@ export async function runScanPipeline(
     );
 
     // 4. Execute each query via AI provider
-    // 5. Analyze each response
+    // 5. Analyze each response (batched for speed)
+    const BATCH_SIZE = 5;
     const queryResults: QueryResult[] = [];
 
-    for (const query of discovery.queries) {
-      const aiResponse = await provider.query({ query, domain });
-      const analyzed = await analyzeResponse(
-        domain,
-        query,
-        aiResponse.content,
-        aiResponse.sources,
-        provider,
-        locale
+    for (let i = 0; i < discovery.queries.length; i += BATCH_SIZE) {
+      const batch = discovery.queries.slice(i, i + BATCH_SIZE);
+      const batchResults = await Promise.all(
+        batch.map(async (query) => {
+          const aiResponse = await provider.query({ query, domain });
+          return analyzeResponse(
+            domain,
+            query,
+            aiResponse.content,
+            aiResponse.sources,
+            provider,
+            locale
+          );
+        })
       );
-      queryResults.push(analyzed);
+      queryResults.push(...batchResults);
     }
 
     // 6. Compute score + metrics

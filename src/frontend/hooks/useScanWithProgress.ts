@@ -32,7 +32,11 @@ const STEP_KEYS = [
   "recommendations",
 ] as const;
 
-const STEP_DELAYS = [2000, 4000, 12000, 6000, 4000];
+const DEPTH_DELAYS: Record<string, number[]> = {
+  quick:    [1500, 3000,  8000,  3000, 2500],
+  standard: [2000, 4000, 15000,  5000, 3000],
+  deep:     [2000, 5000, 30000, 10000, 5000],
+};
 
 export function useScanWithProgress(
   params: ScanParams | null
@@ -93,7 +97,8 @@ export function useScanWithProgress(
           err instanceof Error ? err.message : "An unexpected error occurred";
       });
 
-    // Start step timer
+    // Start step timer — delays scale with scan depth
+    const stepDelays = DEPTH_DELAYS[params.depth] || DEPTH_DELAYS.standard;
     let stepIndex = 0;
 
     function advanceStep() {
@@ -123,7 +128,7 @@ export function useScanWithProgress(
       );
       setCurrentStep(stepIndex);
 
-      const delay = STEP_DELAYS[stepIndex];
+      const delay = stepDelays[stepIndex];
       setTimeout(() => {
         setSteps((prev) =>
           prev.map((s, i) => (i === stepIndex ? { ...s, status: "done" } : s))
