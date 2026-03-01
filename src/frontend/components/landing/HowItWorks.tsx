@@ -1,9 +1,9 @@
 "use client";
 
 import { Globe, Brain, BarChart3 } from "lucide-react";
-import { Card, CardContent } from "@/frontend/components/ui/card";
 import { useDictionary } from "@/frontend/components/providers/DictionaryProvider";
 import { ScrollReveal } from "@/frontend/components/animations/ScrollReveal";
+import GlareHover from "@/frontend/components/GlareHover";
 
 const STEP_ICONS = [Globe, Brain, BarChart3] as const;
 
@@ -29,8 +29,19 @@ export function HowItWorks() {
             const Icon = STEP_ICONS[index];
             return (
               <ScrollReveal key={index} delay={0.15 * index}>
-                <Card className="relative overflow-hidden border-border/50 bg-card/50 backdrop-blur-sm transition-colors hover:border-primary/30">
-                  <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
+                <GlareHover
+                  width="100%"
+                  height="100%"
+                  background="var(--card)"
+                  borderRadius="0.75rem"
+                  borderColor="var(--border)"
+                  glareColor="#6366f1"
+                  glareOpacity={0.15}
+                  glareSize={200}
+                  transitionDuration={500}
+                  className="!cursor-default"
+                >
+                  <div className="flex flex-col items-center gap-4 p-8 text-center">
                     <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10">
                       <Icon className="h-7 w-7 text-primary" />
                     </div>
@@ -41,8 +52,8 @@ export function HowItWorks() {
                     <p className="text-sm leading-relaxed text-muted-foreground">
                       {step.description}
                     </p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </GlareHover>
               </ScrollReveal>
             );
           })}

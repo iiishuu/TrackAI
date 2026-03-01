@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { ArrowRight } from "lucide-react";
-import { Button } from "@/frontend/components/ui/button";
 import { Input } from "@/frontend/components/ui/input";
 import { useDictionary } from "@/frontend/components/providers/DictionaryProvider";
-import { BlurText } from "@/frontend/components/animations/BlurText";
+import BlurText from "@/frontend/components/BlurText";
 import { GradientText } from "@/frontend/components/animations/GradientText";
 import { ScrollReveal } from "@/frontend/components/animations/ScrollReveal";
+import StarBorder from "@/frontend/components/StarBorder";
 
 export function Hero() {
   const [domain, setDomain] = useState("");
@@ -35,6 +35,7 @@ export function Hero() {
             delay={80}
             animateBy="words"
             direction="top"
+            className="justify-center"
           />
           <GradientText animate className="mt-2 block">
             <BlurText
@@ -43,6 +44,7 @@ export function Hero() {
               animateBy="words"
               direction="bottom"
               stepDuration={0.5}
+              className="justify-center"
             />
           </GradientText>
           {t.hero.titleAfter && (
@@ -51,6 +53,7 @@ export function Hero() {
               delay={80}
               animateBy="words"
               direction="top"
+              className="justify-center"
             />
           )}
         </h1>
@@ -66,7 +69,7 @@ export function Hero() {
         <ScrollReveal delay={1.4}>
           <form
             onSubmit={handleSubmit}
-            className="flex w-full max-w-lg gap-2"
+            className="flex w-full max-w-lg gap-3"
           >
             <Input
               type="text"
@@ -75,15 +78,17 @@ export function Hero() {
               onChange={(e) => setDomain(e.target.value)}
               className="h-12 flex-1 bg-card/50 text-base backdrop-blur-sm"
             />
-            <Button
-              type="submit"
-              disabled={!domain.trim()}
-              size="lg"
-              className="h-12 gap-2 px-6"
+            <StarBorder
+              as="button"
+              color="oklch(0.65 0.2 255)"
+              speed="5s"
+              className="h-12"
             >
-              {t.hero.analyze}
-              <ArrowRight className="h-4 w-4" />
-            </Button>
+              <span className="flex items-center gap-2 whitespace-nowrap text-sm font-medium">
+                {t.hero.analyze}
+                <ArrowRight className="h-4 w-4" />
+              </span>
+            </StarBorder>
           </form>
         </ScrollReveal>
       </div>
