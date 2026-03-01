@@ -5,6 +5,7 @@ import { ScoreCard } from "@/frontend/components/report/ScoreCard";
 import { MetricsGrid } from "@/frontend/components/report/MetricsGrid";
 import { CompetitiveAnalysis } from "@/frontend/components/report/CompetitiveAnalysis";
 import { SourceAnalysis } from "@/frontend/components/report/SourceAnalysis";
+import { SentimentChart } from "@/frontend/components/report/SentimentChart";
 import { QueryResultCard } from "@/frontend/components/report/QueryResultCard";
 import { RecommendationList } from "@/frontend/components/report/RecommendationList";
 import { Separator } from "@/frontend/components/ui/separator";
@@ -93,12 +94,21 @@ export default async function ReportPage({ params }: ReportPageProps) {
         />
       </section>
 
+      {/* Sentiment Distribution */}
+      <section>
+        <h2 className="mb-4 text-xl font-semibold">
+          {t.metrics.sentiment}
+        </h2>
+        <SentimentChart queryResults={report.queryResults} t={t} />
+      </section>
+
       {/* Source Analysis */}
       <section>
         <h2 className="mb-4 text-xl font-semibold">
           {t.report.sourceAnalysis}
         </h2>
         <SourceAnalysis
+          queryResults={report.queryResults}
           influenceSources={report.metrics.influenceSources}
           t={t}
         />
