@@ -6,7 +6,7 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/frontend/components/ui/button";
 import { Input } from "@/frontend/components/ui/input";
 import { useDictionary } from "@/frontend/components/providers/DictionaryProvider";
-import { SplitText } from "@/frontend/components/animations/SplitText";
+import { BlurText } from "@/frontend/components/animations/BlurText";
 import { GradientText } from "@/frontend/components/animations/GradientText";
 import { ScrollReveal } from "@/frontend/components/animations/ScrollReveal";
 
@@ -30,11 +30,29 @@ export function Hero() {
       <div className="relative z-10 flex flex-col items-center gap-8">
         {/* Title */}
         <h1 className="max-w-4xl text-4xl font-bold tracking-tight sm:text-5xl md:text-7xl">
-          <SplitText text={t.hero.titleBefore} delay={0.3} />
-          <GradientText animate className="mt-1 block">
-            <SplitText text={t.hero.titleHighlight} delay={0.6} />
+          <BlurText
+            text={t.hero.titleBefore}
+            delay={80}
+            animateBy="words"
+            direction="top"
+          />
+          <GradientText animate className="mt-2 block">
+            <BlurText
+              text={t.hero.titleHighlight}
+              delay={100}
+              animateBy="words"
+              direction="bottom"
+              stepDuration={0.5}
+            />
           </GradientText>
-          <SplitText text={t.hero.titleAfter} delay={0.9} />
+          {t.hero.titleAfter && (
+            <BlurText
+              text={t.hero.titleAfter}
+              delay={80}
+              animateBy="words"
+              direction="top"
+            />
+          )}
         </h1>
 
         {/* Description */}
