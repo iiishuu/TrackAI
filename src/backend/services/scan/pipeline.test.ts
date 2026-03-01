@@ -66,19 +66,6 @@ function createMockProvider(): AIProvider {
   return {
     name: "mock",
     query: vi.fn().mockImplementation(({ query }: { query: string }) => {
-      // Discovery prompt — contains "sector" and "competitors"
-      if (query.includes("sector") && query.includes("competitors")) {
-        return Promise.resolve({
-          content: JSON.stringify({
-            sector: "SaaS",
-            competitors: ["rival.com"],
-            queries: ["What is example.com?", "example.com reviews"],
-          }),
-          sources: [],
-          provider: "mock",
-        });
-      }
-
       // Analysis prompt — contains "Analyze the following AI response"
       if (query.includes("Analyze the following AI response")) {
         return Promise.resolve({
@@ -94,8 +81,8 @@ function createMockProvider(): AIProvider {
         });
       }
 
-      // Recommendations prompt — contains "AI visibility expert"
-      if (query.includes("AI visibility expert")) {
+      // Recommendations prompt (check before discovery — both contain "sector")
+      if (query.includes("AI visibility strategist")) {
         return Promise.resolve({
           content: JSON.stringify([
             {
@@ -104,6 +91,19 @@ function createMockProvider(): AIProvider {
               priority: "high",
             },
           ]),
+          sources: [],
+          provider: "mock",
+        });
+      }
+
+      // Discovery prompt — asks to identify sector/competitors/queries
+      if (query.includes("sector") && query.includes("competitors")) {
+        return Promise.resolve({
+          content: JSON.stringify({
+            sector: "SaaS",
+            competitors: ["rival.com"],
+            queries: ["What is example.com?", "example.com reviews"],
+          }),
           sources: [],
           provider: "mock",
         });

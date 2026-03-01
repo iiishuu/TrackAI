@@ -1,4 +1,4 @@
-import type { AIProvider, Metrics, Recommendation } from "@/shared/types";
+import type { AIProvider, Metrics, QueryResult, Recommendation } from "@/shared/types";
 import type { Locale } from "@/shared/i18n/types";
 
 const LOCALE_INSTRUCTION: Record<Locale, string> = {
@@ -6,32 +6,87 @@ const LOCALE_INSTRUCTION: Record<Locale, string> = {
   fr: '\nIMPORTANT: Write the "title" and "description" values in French.',
 };
 
-const RECOMMENDATIONS_PROMPT = (domain: string, metrics: Metrics, locale: Locale = "en") => `
-You are an AI visibility expert. Analyze these metrics for "${domain}" and provide actionable recommendations.
+export interface RecommendationContext {
+  domain: string;
+  sector: string;
+  competitors: string[];
+  metrics: Metrics;
+  queryResults: QueryResult[];
+}
+
+function buildQuerySummary(results: QueryResult[]): string {
+  const present = results.filter((r) => r.isPresent);
+  const absent = results.filter((r) => !r.isPresent);
+
+  const lines: string[] = [];
+
+  if (absent.length > 0) {
+    lines.push(`Queries where the brand is NOT mentioned (${absent.length}/${results.length}):`);
+    for (const r of absent) {
+      lines.push(`  - "${r.query}"`);
+    }
+  }
+
+  if (present.length > 0) {
+    const negative = present.filter((r) => r.sentiment === "negative");
+    if (negative.length > 0) {
+      lines.push(`Queries with negative sentiment:`);
+      for (const r of negative) {
+        lines.push(`  - "${r.query}" → ${r.context.slice(0, 120)}`);
+      }
+    }
+
+    const lowRank = present.filter((r) => r.rank !== null && r.rank > 3);
+    if (lowRank.length > 0) {
+      lines.push(`Queries where brand ranks below #3:`);
+      for (const r of lowRank) {
+        lines.push(`  - "${r.query}" → rank #${r.rank}`);
+      }
+    }
+  }
+
+  if (lines.length === 0) {
+    lines.push("Brand is mentioned in all queries with good position and positive/neutral sentiment.");
+  }
+
+  return lines.join("\n");
+}
+
+const RECOMMENDATIONS_PROMPT = (ctx: RecommendationContext, locale: Locale = "en") => `
+You are an AI visibility strategist. You help brands improve how AI search engines (ChatGPT, Perplexity, Gemini) talk about them.
+
+Brand: "${ctx.domain}"
+Sector: ${ctx.sector}
+Top competitors: ${ctx.competitors.join(", ") || "none identified"}
 
 Metrics:
-- Visibility Score: ${metrics.visibilityScore}/100
-- Citation Rate: ${Math.round(metrics.citationRate * 100)}% (how often AI mentions this brand)
-- Average Position: ${metrics.averagePosition ?? "not ranked"}
-- Overall Sentiment: ${metrics.overallSentiment}
-- Share of Voice: ${JSON.stringify(metrics.shareOfVoice)}
-- Influence Sources: ${metrics.influenceSources.join(", ") || "none"}
+- Visibility Score: ${ctx.metrics.visibilityScore}/100
+- Citation Rate: ${Math.round(ctx.metrics.citationRate * 100)}% (mentioned in ${Math.round(ctx.metrics.citationRate * ctx.queryResults.length)}/${ctx.queryResults.length} AI responses)
+- Average Position: ${ctx.metrics.averagePosition ?? "not ranked"} (when mentioned in a list)
+- Overall Sentiment: ${ctx.metrics.overallSentiment}
+- Share of Voice vs competitors: ${JSON.stringify(ctx.metrics.shareOfVoice)}
 
-Provide 3-5 specific, actionable recommendations in JSON format only (no markdown, no explanation):
+Analysis of weak points:
+${buildQuerySummary(ctx.queryResults)}
+
+Provide 3 to 5 actionable recommendations in JSON format only.
 
 [
   {
-    "title": "Short action title",
-    "description": "Detailed explanation of what to do and why it will improve AI visibility",
+    "title": "Short action title (5-10 words)",
+    "description": "What to do concretely and why it will improve AI visibility. Be specific to this brand and sector.",
     "priority": "high" | "medium" | "low"
   }
 ]
 
 Rules:
 - Sort by priority (high first)
-- Be specific to this domain and its metrics
-- Focus on improving AI visibility (not traditional SEO)
-- Each recommendation should be actionable and concrete
+- Focus ONLY on improving AI visibility (how LLMs like ChatGPT/Perplexity/Gemini reference and recommend this brand)
+- Do NOT recommend traditional SEO tactics (backlinks, meta tags, keyword density)
+- Do NOT recommend things the brand clearly already does well (based on the metrics above)
+- Each recommendation must be specific to "${ctx.domain}" in the "${ctx.sector}" sector — no generic advice
+- If the score is already very high (>85), focus on maintaining leadership and addressing the few remaining weak points
+- Fewer strong recommendations are better than many weak ones
 
 Respond ONLY with valid JSON array, nothing else.${LOCALE_INSTRUCTION[locale]}
 `;
@@ -66,14 +121,13 @@ export function parseRecommendationsResponse(content: string): Recommendation[] 
 }
 
 export async function generateRecommendations(
-  domain: string,
-  metrics: Metrics,
+  ctx: RecommendationContext,
   provider: AIProvider,
   locale: Locale = "en"
 ): Promise<Recommendation[]> {
   const response = await provider.query({
-    query: RECOMMENDATIONS_PROMPT(domain, metrics, locale),
-    domain,
+    query: RECOMMENDATIONS_PROMPT(ctx, locale),
+    domain: ctx.domain,
   });
 
   return parseRecommendationsResponse(response.content);

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import type { AIProvider, Metrics } from "@/shared/types";
+import type { AIProvider, Metrics, QueryResult } from "@/shared/types";
+import type { RecommendationContext } from "./recommendations";
 import {
   generateRecommendations,
   parseRecommendationsResponse,
@@ -41,6 +42,37 @@ const SAMPLE_METRICS: Metrics = {
   overallSentiment: "neutral",
   shareOfVoice: { "example.com": 30, "rival.com": 70 },
   influenceSources: ["wikipedia.org", "techcrunch.com"],
+};
+
+const SAMPLE_QUERY_RESULTS: QueryResult[] = [
+  {
+    query: "what is example.com?",
+    response: "Example.com is a platform.",
+    isPresent: true,
+    rank: 2,
+    sentiment: "positive",
+    competitors: ["rival.com"],
+    sources: ["https://wiki.com"],
+    context: "Example.com is a platform",
+  },
+  {
+    query: "best tools in SaaS",
+    response: "The best tools are...",
+    isPresent: false,
+    rank: null,
+    sentiment: "neutral",
+    competitors: ["rival.com", "other.com"],
+    sources: [],
+    context: "",
+  },
+];
+
+const SAMPLE_CONTEXT: RecommendationContext = {
+  domain: "example.com",
+  sector: "SaaS",
+  competitors: ["rival.com", "other.com"],
+  metrics: SAMPLE_METRICS,
+  queryResults: SAMPLE_QUERY_RESULTS,
 };
 
 // ----- parseRecommendationsResponse -----
@@ -107,8 +139,7 @@ describe("generateRecommendations", () => {
   it("calls provider and returns parsed recommendations", async () => {
     const provider = mockProvider(VALID_RECOMMENDATIONS);
     const result = await generateRecommendations(
-      "example.com",
-      SAMPLE_METRICS,
+      SAMPLE_CONTEXT,
       provider
     );
 
@@ -117,12 +148,19 @@ describe("generateRecommendations", () => {
     expect(result[0].title).toBe("Improve content authority");
   });
 
-  it("includes domain and metrics in the prompt", async () => {
+  it("includes domain, sector, and metrics in the prompt", async () => {
     const provider = mockProvider(VALID_RECOMMENDATIONS);
-    await generateRecommendations("mysite.io", SAMPLE_METRICS, provider);
+    const ctx: RecommendationContext = {
+      ...SAMPLE_CONTEXT,
+      domain: "mysite.io",
+      sector: "E-commerce",
+    };
+    await generateRecommendations(ctx, provider);
 
     const call = vi.mocked(provider.query).mock.calls[0][0];
     expect(call.query).toContain("mysite.io");
     expect(call.query).toContain("45/100");
+    expect(call.query).toContain("E-commerce");
+    expect(call.query).toContain("rival.com");
   });
 });

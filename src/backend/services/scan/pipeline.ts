@@ -92,10 +92,15 @@ export async function runScanPipeline(
     // 6. Compute score + metrics
     const metrics = computeMetrics(queryResults, domain);
 
-    // 7. Generate recommendations
+    // 7. Generate recommendations (with full context)
     const recommendations = await generateRecommendations(
-      domain,
-      metrics,
+      {
+        domain,
+        sector: discovery.sector,
+        competitors: discovery.competitors,
+        metrics,
+        queryResults,
+      },
       provider,
       locale
     );
