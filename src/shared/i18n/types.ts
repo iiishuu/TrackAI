@@ -1,5 +1,13 @@
 export type Locale = "en" | "fr";
 
+export type QueryType =
+  | "commercial"
+  | "comparative"
+  | "reputation"
+  | "informational";
+
+export type ScanDepth = "quick" | "standard" | "deep";
+
 export interface Dictionary {
   meta: {
     siteTitle: string;
@@ -9,12 +17,9 @@ export interface Dictionary {
     historyTitle: string;
     historyDescription: string;
     reportNotFound: string;
-    reportTitle: (domain: string) => string;
-    reportDescription: (
-      score: number,
-      domain: string,
-      sector: string
-    ) => string;
+    reportTitle: string;
+    reportDescription: string;
+    loadingTitle: string;
   };
 
   nav: {
@@ -45,6 +50,28 @@ export interface Dictionary {
     placeholder: string;
     analyze: string;
     analyzing: string;
+    whatWeAnalyze: string;
+    infoCards: Array<{ title: string; description: string }>;
+    aiEngine: string;
+    aiEngineDesc: string;
+    queryTypes: string;
+    queryTypesDesc: string;
+    depth: string;
+    depthDesc: string;
+    commercial: string;
+    commercialDesc: string;
+    comparative: string;
+    comparativeDesc: string;
+    reputation: string;
+    reputationDesc: string;
+    informational: string;
+    informationalDesc: string;
+    quick: string;
+    quickDesc: string;
+    standard: string;
+    standardDesc: string;
+    deep: string;
+    deepDesc: string;
   };
 
   scanSteps: {
@@ -53,6 +80,23 @@ export interface Dictionary {
     aiQueryAnalysis: string;
     scoreComputation: string;
     recommendations: string;
+  };
+
+  loading: {
+    title: string;
+    subtitle: string;
+    stepDescriptions: {
+      domainValidation: string;
+      sectorDiscovery: string;
+      aiQueryAnalysis: string;
+      scoreComputation: string;
+      recommendations: string;
+    };
+    complete: string;
+    redirecting: string;
+    error: string;
+    tryAgain: string;
+    facts: string[];
   };
 
   report: {
@@ -64,6 +108,29 @@ export interface Dictionary {
     scoreGood: string;
     scoreAverage: string;
     scoreLow: string;
+    header: string;
+    scanDate: string;
+    downloadPdf: string;
+    competitiveAnalysis: string;
+    shareOfVoiceChart: string;
+    yourBrand: string;
+    sourceAnalysis: string;
+    influenceSources: string;
+    influenceSourcesDesc: string;
+    queriesAnalyzed: string;
+    queriesAnalyzedDesc: string;
+    sourcesCount: string;
+    sourcesCountDesc: string;
+    viewFullResponse: string;
+    hideFullResponse: string;
+    aiSources: string;
+    noSources: string;
+    noInfluenceSources: string;
+    scoreContext: {
+      good: string;
+      average: string;
+      low: string;
+    };
   };
 
   metrics: {
