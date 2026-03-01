@@ -45,12 +45,12 @@ export function CompetitiveAnalysis({
 
   const chartData = [
     ...topEntries.map(([name, value]) => ({
-      name: name.toLowerCase() === domain.toLowerCase() ? `${name} *` : name,
+      name,
       value: Math.round(value),
       isDomain: name.toLowerCase() === domain.toLowerCase(),
     })),
     ...(otherTotal > 0
-      ? [{ name: `Others (${otherEntries.length})`, value: Math.round(otherTotal), isDomain: false }]
+      ? [{ name: `+${otherEntries.length} others`, value: Math.round(otherTotal), isDomain: false }]
       : []),
   ];
 
@@ -60,7 +60,7 @@ export function CompetitiveAnalysis({
         <h3 className="mb-4 text-sm font-medium text-muted-foreground">
           {t.report.shareOfVoiceChart}
         </h3>
-        <div className="flex flex-col items-center gap-6 md:flex-row">
+        <div className="flex flex-col gap-6 md:flex-row">
           {/* Donut chart */}
           <div className="h-64 w-full md:w-1/2">
             <ResponsiveContainer width="100%" height="100%">
@@ -69,12 +69,10 @@ export function CompetitiveAnalysis({
                   data={chartData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={100}
+                  innerRadius={55}
+                  outerRadius={90}
                   paddingAngle={2}
                   dataKey="value"
-                  label={({ name, value }) => `${value}%`}
-                  labelLine={false}
                 >
                   {chartData.map((entry, i) => (
                     <Cell
@@ -97,9 +95,11 @@ export function CompetitiveAnalysis({
                   }}
                 />
                 <Legend
-                  wrapperStyle={{ fontSize: "11px" }}
+                  wrapperStyle={{ fontSize: "11px", paddingTop: "8px" }}
                   iconType="circle"
                   iconSize={8}
+                  layout="horizontal"
+                  align="center"
                 />
               </PieChart>
             </ResponsiveContainer>

@@ -54,8 +54,8 @@ export function SourceAnalysis({
   return (
     <Card>
       <CardContent className="space-y-4 pt-6">
-        <div className="flex items-center justify-between">
-          <div>
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
             <h3 className="text-sm font-medium text-muted-foreground">
               {t.report.influenceSources}
             </h3>
@@ -63,8 +63,8 @@ export function SourceAnalysis({
               {t.report.influenceSourcesDesc}
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold">{uniqueDomains}</p>
+          <div className="shrink-0 text-right">
+            <p className="text-2xl font-bold tabular-nums">{uniqueDomains}</p>
             <p className="text-xs text-muted-foreground">
               {totalSources} {t.report.sourcesCountDesc}
             </p>

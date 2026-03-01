@@ -6,8 +6,17 @@ const LOCALE_INSTRUCTION: Record<Locale, string> = {
   fr: '\nIMPORTANT: The "context" value must be written in French.',
 };
 
-const ANALYSIS_PROMPT = (domain: string, query: string, response: string, locale: Locale = "en") => `
+export function extractBrandName(domain: string): string {
+  // "supabase.com" → "supabase", "my-app.io" → "my-app"
+  return domain.replace(/\.(com|io|org|net|co|ai|dev|app|xyz|me|fr|de|uk|us|tech)$/i, "").toLowerCase();
+}
+
+const ANALYSIS_PROMPT = (domain: string, query: string, response: string, locale: Locale = "en") => {
+  const brand = extractBrandName(domain);
+  return `
 Analyze the following AI response about "${domain}" for the query "${query}".
+
+The brand name is "${brand}" (from domain "${domain}").
 
 AI Response:
 """
@@ -21,18 +30,19 @@ Provide your analysis in JSON format only (no markdown, no explanation):
   "rank": number or null,
   "sentiment": "positive" | "neutral" | "negative",
   "competitors": ["competitor1.com", "competitor2.com"],
-  "context": "the exact sentence or phrase where ${domain} is mentioned, or empty string if not present"
+  "context": "the exact sentence or phrase where the brand is mentioned, or empty string if not present"
 }
 
 Rules:
-- "isPresent": true if "${domain}" (or its brand name) is explicitly mentioned in the response
-- "rank": the position where ${domain} appears in any list or ranking (1 = first mentioned, 2 = second, etc.). null if not in a list or not present
-- "sentiment": the overall tone about ${domain} specifically. "neutral" if factual, "positive" if recommending, "negative" if criticizing
-- "competitors": other domains/brands mentioned in the response (max 5)
-- "context": the exact quote where ${domain} is mentioned. Empty string if not present
+- "isPresent": true if the brand "${brand}" OR the domain "${domain}" appears ANYWHERE in the response, in any form (e.g., "${brand}", "${domain}", "${brand}.com", capitalized "${brand[0].toUpperCase()}${brand.slice(1)}"). Be generous — if the brand name appears even once, set true.
+- "rank": the position where ${brand} appears in any list or ranking (1 = first mentioned, 2 = second, etc.). null if not in a list or not present
+- "sentiment": the overall tone about ${brand} specifically. "neutral" if factual, "positive" if recommending, "negative" if criticizing
+- "competitors": other domains/brands mentioned in the response that are NOT ${brand} (max 5)
+- "context": the FIRST exact sentence where ${brand} or ${domain} is mentioned. Empty string if not present
 
 Respond ONLY with valid JSON, nothing else.${LOCALE_INSTRUCTION[locale]}
 `;
+};
 
 const VALID_SENTIMENTS: Sentiment[] = ["positive", "neutral", "negative"];
 
