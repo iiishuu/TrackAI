@@ -15,7 +15,7 @@ export async function GET(request: Request) {
       .limit(50);
 
     if (domain) {
-      query = query.eq("domain", domain.toLowerCase());
+      query = query.ilike("domain", `%${domain.toLowerCase()}%`);
     }
 
     const { data, error } = await query;

@@ -48,7 +48,7 @@ export default async function RootLayout({
         >
           <DictionaryProvider dictionary={dictionary} locale={locale}>
             <Navbar />
-            <div className="pt-14">
+            <div className="pt-[4.5rem]">
               {children}
             </div>
           </DictionaryProvider>

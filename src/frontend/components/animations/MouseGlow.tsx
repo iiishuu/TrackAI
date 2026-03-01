@@ -37,13 +37,13 @@ export function MouseGlow() {
   if (shouldReduce) return null;
 
   const glowColor = isDark
-    ? "oklch(0.65 0.2 255 / 0.07)"
-    : "oklch(0.50 0.2 255 / 0.05)";
+    ? "oklch(0.65 0.2 255 / 0.15)"
+    : "oklch(0.50 0.2 255 / 0.10)";
 
   return (
     <div
       ref={glowRef}
-      className="pointer-events-none fixed inset-0 z-30 opacity-0 transition-opacity duration-300"
+      className="pointer-events-none fixed inset-0 z-[1] opacity-0 transition-opacity duration-300"
       style={{
         background: `radial-gradient(600px circle at var(--glow-x, 50%) var(--glow-y, 50%), ${glowColor}, transparent 40%)`,
       }}

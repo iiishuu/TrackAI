@@ -25,9 +25,9 @@ export const fr: Dictionary = {
 
   hero: {
     badge: "Visibilité IA",
-    titleBefore: "Votre marque sur les ",
-    titleHighlight: "moteurs IA",
-    titleAfter: ", en temps réel",
+    titleBefore: "Mesurez votre visibilité sur les ",
+    titleHighlight: "moteurs de recherche IA",
+    titleAfter: "",
     description:
       "Découvrez comment ChatGPT, Gemini et Perplexity parlent de votre marque. Obtenez des recommandations concrètes pour booster votre visibilité.",
     placeholder: "Entrez votre domaine...",
