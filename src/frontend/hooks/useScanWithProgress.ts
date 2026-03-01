@@ -9,6 +9,13 @@ interface Step {
   status: StepStatus;
 }
 
+export interface ScanParams {
+  domain: string;
+  engine: string;
+  depth: string;
+  types: string;
+}
+
 interface UseScanWithProgressReturn {
   steps: Step[];
   currentStep: number;
@@ -28,7 +35,7 @@ const STEP_KEYS = [
 const STEP_DELAYS = [2000, 4000, 12000, 6000, 4000];
 
 export function useScanWithProgress(
-  domain: string | null
+  params: ScanParams | null
 ): UseScanWithProgressReturn {
   const [steps, setSteps] = useState<Step[]>(
     STEP_KEYS.map((key) => ({ key, status: "pending" }))
@@ -52,14 +59,22 @@ export function useScanWithProgress(
   }, []);
 
   useEffect(() => {
-    if (!domain || started.current) return;
+    if (!params || started.current) return;
     started.current = true;
 
-    // Start API call
+    const queryTypes = params.types
+      ? params.types.split(",").filter(Boolean)
+      : undefined;
+
+    // Start API call with all scan options
     fetch("/api/scan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ domain }),
+      body: JSON.stringify({
+        domain: params.domain,
+        depth: params.depth || "standard",
+        queryTypes,
+      }),
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -97,7 +112,6 @@ export function useScanWithProgress(
         return;
       }
 
-      // Mark current step as running
       setSteps((prev) =>
         prev.map((s, i) =>
           i === stepIndex
@@ -111,7 +125,6 @@ export function useScanWithProgress(
 
       const delay = STEP_DELAYS[stepIndex];
       setTimeout(() => {
-        // Mark current as done
         setSteps((prev) =>
           prev.map((s, i) => (i === stepIndex ? { ...s, status: "done" } : s))
         );
@@ -119,7 +132,6 @@ export function useScanWithProgress(
         stepIndex++;
 
         if (stepIndex >= STEP_KEYS.length) {
-          // All simulated steps done, wait for API if needed
           if (apiDone.current) {
             if (apiError.current) {
               setError(apiError.current);
@@ -128,7 +140,6 @@ export function useScanWithProgress(
               setIsComplete(true);
             }
           } else {
-            // Wait for API with polling
             const poll = setInterval(() => {
               if (apiDone.current) {
                 clearInterval(poll);
@@ -142,7 +153,6 @@ export function useScanWithProgress(
             }, 500);
           }
         } else if (apiDone.current && !apiError.current) {
-          // API returned early — snap remaining steps to done
           completeAllSteps();
         } else {
           advanceStep();
@@ -151,7 +161,7 @@ export function useScanWithProgress(
     }
 
     advanceStep();
-  }, [domain, completeAllSteps]);
+  }, [params, completeAllSteps]);
 
   return { steps, currentStep, isComplete, error, reportId };
 }

@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/frontend/components/ui/card";
 import { Button } from "@/frontend/components/ui/button";
-import { useScanWithProgress } from "@/frontend/hooks/useScanWithProgress";
+import {
+  useScanWithProgress,
+  type ScanParams,
+} from "@/frontend/hooks/useScanWithProgress";
 import { useDictionary } from "@/frontend/components/providers/DictionaryProvider";
 
 const STEP_KEYS = [
@@ -20,8 +23,20 @@ export function ScanLoading() {
   const domain = searchParams.get("domain");
   const router = useRouter();
   const { t } = useDictionary();
+
+  const scanParams: ScanParams | null = domain
+    ? {
+        domain,
+        engine: searchParams.get("engine") || "perplexity",
+        depth: searchParams.get("depth") || "standard",
+        types:
+          searchParams.get("types") ||
+          "commercial,comparative,reputation,informational",
+      }
+    : null;
+
   const { steps, isComplete, error, reportId } =
-    useScanWithProgress(domain);
+    useScanWithProgress(scanParams);
   const [factIndex, setFactIndex] = useState(0);
 
   // Rotate fun facts

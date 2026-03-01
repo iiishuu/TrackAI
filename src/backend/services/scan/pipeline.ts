@@ -1,11 +1,22 @@
 import type { AIProvider, QueryResult, Report } from "@/shared/types";
-import type { Locale } from "@/shared/i18n/types";
+import type { Locale, QueryType, ScanDepth } from "@/shared/i18n/types";
 import { getSupabaseAdmin } from "@/backend/lib/supabase/client";
 import { validateAndSanitizeDomain } from "@/backend/validation/domain";
 import { discoverDomain } from "./discovery";
 import { analyzeResponse } from "./analysis";
 import { computeMetrics } from "./scoringEngine";
 import { generateRecommendations } from "./recommendations";
+
+export interface ScanOptions {
+  depth: ScanDepth;
+  queryTypes: QueryType[];
+}
+
+const DEPTH_QUERY_COUNT: Record<ScanDepth, number> = {
+  quick: 5,
+  standard: 10,
+  deep: 20,
+};
 
 export interface PipelineResult {
   scanId: string;
@@ -16,9 +27,14 @@ export interface PipelineResult {
 export async function runScanPipeline(
   rawDomain: string,
   provider: AIProvider,
-  locale: Locale = "en"
+  locale: Locale = "en",
+  options: ScanOptions = {
+    depth: "standard",
+    queryTypes: ["commercial", "comparative", "reputation", "informational"],
+  }
 ): Promise<PipelineResult> {
   const supabase = getSupabaseAdmin();
+  const queryCount = DEPTH_QUERY_COUNT[options.depth];
 
   // 1. Validate domain
   const validation = validateAndSanitizeDomain(rawDomain);
@@ -41,10 +57,16 @@ export async function runScanPipeline(
   const scanId = scan.id;
 
   try {
-    // 3. Discovery — sector + competitors + queries
-    const discovery = await discoverDomain(domain, provider, locale);
+    // 3. Discovery — sector + competitors + queries (with depth and query types)
+    const discovery = await discoverDomain(
+      domain,
+      provider,
+      locale,
+      queryCount,
+      options.queryTypes
+    );
 
-    // 4. Execute each query via Perplexity
+    // 4. Execute each query via AI provider
     // 5. Analyze each response
     const queryResults: QueryResult[] = [];
 

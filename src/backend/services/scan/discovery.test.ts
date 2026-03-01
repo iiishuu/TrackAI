@@ -34,7 +34,7 @@ const VALID_RESPONSE = JSON.stringify({
 
 describe("parseDiscoveryResponse", () => {
   it("parses valid JSON response", () => {
-    const result = parseDiscoveryResponse(VALID_RESPONSE);
+    const result = parseDiscoveryResponse(VALID_RESPONSE, 10);
     expect(result.sector).toBe("SaaS");
     expect(result.competitors).toHaveLength(3);
     expect(result.queries).toHaveLength(10);
@@ -42,7 +42,7 @@ describe("parseDiscoveryResponse", () => {
 
   it("extracts JSON from markdown-wrapped response", () => {
     const wrapped = `Here is the analysis:\n\`\`\`json\n${VALID_RESPONSE}\n\`\`\``;
-    const result = parseDiscoveryResponse(wrapped);
+    const result = parseDiscoveryResponse(wrapped, 10);
     expect(result.sector).toBe("SaaS");
   });
 
@@ -52,29 +52,32 @@ describe("parseDiscoveryResponse", () => {
       competitors: ["a.com", "b.com", "c.com", "d.com", "e.com", "f.com", "g.com"],
       queries: ["q1"],
     });
-    const result = parseDiscoveryResponse(response);
+    const result = parseDiscoveryResponse(response, 10);
     expect(result.competitors).toHaveLength(5);
   });
 
-  it("caps queries at 10", () => {
+  it("caps queries at requested count", () => {
     const queries = Array.from({ length: 15 }, (_, i) => `query ${i}`);
     const response = JSON.stringify({
       sector: "Tech",
       competitors: ["a.com"],
       queries,
     });
-    const result = parseDiscoveryResponse(response);
+    const result = parseDiscoveryResponse(response, 10);
     expect(result.queries).toHaveLength(10);
+
+    const resultDeep = parseDiscoveryResponse(response, 15);
+    expect(resultDeep.queries).toHaveLength(15);
   });
 
   it("throws on non-JSON response", () => {
-    expect(() => parseDiscoveryResponse("no json here")).toThrow(
+    expect(() => parseDiscoveryResponse("no json here", 10)).toThrow(
       "Discovery: no JSON found in response"
     );
   });
 
   it("throws on invalid JSON structure", () => {
-    expect(() => parseDiscoveryResponse('{"foo": "bar"}')).toThrow(
+    expect(() => parseDiscoveryResponse('{"foo": "bar"}', 10)).toThrow(
       "Discovery: invalid JSON structure"
     );
   });
