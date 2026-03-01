@@ -5,7 +5,7 @@ import { fr } from "./dictionaries/fr";
 export type { Locale, Dictionary };
 
 export const LOCALES: Locale[] = ["en", "fr"];
-export const DEFAULT_LOCALE: Locale = "en";
+export const DEFAULT_LOCALE: Locale = "fr";
 export const LOCALE_COOKIE = "trackai-locale";
 
 const dictionaries: Record<Locale, Dictionary> = { en, fr };

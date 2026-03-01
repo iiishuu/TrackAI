@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getServerDictionary } from "@/shared/i18n/server";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 export async function Navbar() {
   const t = await getServerDictionary();
@@ -24,6 +25,7 @@ export async function Navbar() {
           >
             {t.nav.history}
           </Link>
+          <ThemeSwitcher />
           <LocaleSwitcher />
         </div>
       </div>

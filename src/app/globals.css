@@ -146,6 +146,13 @@
 
 /* Static gradient text */
 .text-gradient-primary {
+  background: linear-gradient(135deg, oklch(0.50 0.2 255), oklch(0.45 0.22 290));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .text-gradient-primary {
   background: linear-gradient(135deg, oklch(0.65 0.2 255), oklch(0.60 0.22 290));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -154,7 +161,7 @@
 
 /* Animated gradient text */
 .text-gradient-animated {
-  background: linear-gradient(90deg, oklch(0.65 0.2 255), oklch(0.60 0.22 290), oklch(0.65 0.2 255));
+  background: linear-gradient(90deg, oklch(0.50 0.2 255), oklch(0.45 0.22 290), oklch(0.50 0.2 255));
   background-size: 200% auto;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -162,8 +169,25 @@
   animation: gradient-shift 4s ease infinite;
 }
 
+.dark .text-gradient-animated {
+  background: linear-gradient(90deg, oklch(0.65 0.2 255), oklch(0.60 0.22 290), oklch(0.65 0.2 255));
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Shimmer text */
 .text-shimmer {
+  background: linear-gradient(110deg, oklch(0.15 0 0) 25%, oklch(0.50 0.2 255) 50%, oklch(0.15 0 0) 75%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+.dark .text-shimmer {
   background: linear-gradient(110deg, oklch(0.97 0 0) 25%, oklch(0.65 0.2 255) 50%, oklch(0.97 0 0) 75%);
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -175,6 +199,13 @@
 /* Subtle grid background */
 .bg-grid-pattern {
   background-image:
+    linear-gradient(to right, oklch(0.85 0 0 / 50%) 1px, transparent 1px),
+    linear-gradient(to bottom, oklch(0.85 0 0 / 50%) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.dark .bg-grid-pattern {
+  background-image:
     linear-gradient(to right, oklch(0.28 0.02 250 / 40%) 1px, transparent 1px),
     linear-gradient(to bottom, oklch(0.28 0.02 250 / 40%) 1px, transparent 1px);
   background-size: 64px 64px;
@@ -182,15 +213,29 @@
 
 /* Radial glow effects */
 .bg-glow-primary {
+  background: radial-gradient(600px circle at 50% 40%, oklch(0.50 0.2 255 / 8%), transparent 50%);
+}
+
+.dark .bg-glow-primary {
   background: radial-gradient(600px circle at 50% 40%, oklch(0.65 0.2 255 / 12%), transparent 50%);
 }
 
 .bg-glow-accent {
+  background: radial-gradient(400px circle at 50% 50%, oklch(0.45 0.22 290 / 6%), transparent 50%);
+}
+
+.dark .bg-glow-accent {
   background: radial-gradient(400px circle at 50% 50%, oklch(0.60 0.22 290 / 8%), transparent 50%);
 }
 
 /* Glass morphism */
 .glass {
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  background: oklch(1 0 0 / 75%);
+}
+
+.dark .glass {
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   background: oklch(0.14 0.02 250 / 80%);

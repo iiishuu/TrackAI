@@ -5,10 +5,12 @@ import { Features } from "@/frontend/components/landing/Features";
 import { Stats } from "@/frontend/components/landing/Stats";
 import { FinalCTA } from "@/frontend/components/landing/FinalCTA";
 import { Footer } from "@/frontend/components/landing/Footer";
+import { MouseGlow } from "@/frontend/components/animations/MouseGlow";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen flex-col pt-14">
+    <div className="flex min-h-screen flex-col">
+      <MouseGlow />
       <Hero />
       <AILogos />
       <HowItWorks />

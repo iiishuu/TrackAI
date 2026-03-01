@@ -81,7 +81,7 @@ export function Footer() {
       {/* Bottom bar */}
       <div className="mx-auto mt-12 max-w-6xl border-t border-border/50 pt-8">
         <p className="text-center text-sm text-muted-foreground">
-          &copy; {new Date().getFullYear()} TrackAI. All rights reserved.
+          &copy; {new Date().getFullYear()} TrackAI. {t.footer.copyright}
         </p>
       </div>
     </footer>

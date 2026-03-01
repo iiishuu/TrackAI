@@ -43,6 +43,7 @@ export const en: Dictionary = {
     title: "How It Works",
     subtitle:
       "Three simple steps to understand your brand's AI presence and take action.",
+    stepLabel: "Step",
     steps: [
       {
         icon: "Globe",
@@ -149,6 +150,7 @@ export const en: Dictionary = {
       { label: "Privacy Policy", href: "#" },
       { label: "Terms of Service", href: "#" },
     ],
+    copyright: "All rights reserved.",
   },
 
   scan: {

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Navbar } from "@/frontend/components/layout/Navbar";
 import { DictionaryProvider } from "@/frontend/components/providers/DictionaryProvider";
+import { ThemeProvider } from "@/frontend/components/providers/ThemeProvider";
 import {
   getServerLocale,
   getServerDictionary,
@@ -35,14 +36,23 @@ export default async function RootLayout({
   const dictionary = await getServerDictionary();
 
   return (
-    <html lang={locale} className="dark">
+    <html lang={locale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <DictionaryProvider dictionary={dictionary} locale={locale}>
-          <Navbar />
-          {children}
-        </DictionaryProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <DictionaryProvider dictionary={dictionary} locale={locale}>
+            <Navbar />
+            <div className="pt-14">
+              {children}
+            </div>
+          </DictionaryProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -45,6 +45,7 @@ export interface Dictionary {
   howItWorks: {
     title: string;
     subtitle: string;
+    stepLabel: string;
     steps: Array<{ icon: string; title: string; description: string }>;
   };
 
@@ -76,6 +77,7 @@ export interface Dictionary {
     resourceLinks: Array<{ label: string; href: string }>;
     legal: string;
     legalLinks: Array<{ label: string; href: string }>;
+    copyright: string;
   };
 
   scan: {

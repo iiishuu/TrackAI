@@ -35,7 +35,7 @@ export function HowItWorks() {
                       <Icon className="h-7 w-7 text-primary" />
                     </div>
                     <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
-                      Step {index + 1}
+                      {t.howItWorks.stepLabel} {index + 1}
                     </span>
                     <h3 className="text-lg font-semibold">{step.title}</h3>
                     <p className="text-sm leading-relaxed text-muted-foreground">
