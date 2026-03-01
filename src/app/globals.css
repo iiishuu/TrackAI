@@ -124,3 +124,42 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Gauge animation for score card */
+@keyframes gauge-fill {
+  from {
+    stroke-dashoffset: 283;
+  }
+}
+
+/* Print styles for PDF download */
+@media print {
+  nav,
+  .no-print,
+  button {
+    display: none !important;
+  }
+
+  :root {
+    color-scheme: light;
+  }
+
+  [data-slot="card"] {
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+
+  [data-state="closed"] [data-slot="collapsible-content"] {
+    display: block !important;
+    height: auto !important;
+  }
+
+  @page {
+    margin: 1.5cm;
+  }
+
+  .bg-primary {
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+}
