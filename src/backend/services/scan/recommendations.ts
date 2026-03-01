@@ -1,6 +1,12 @@
 import type { AIProvider, Metrics, Recommendation } from "@/shared/types";
+import type { Locale } from "@/shared/i18n/types";
 
-const RECOMMENDATIONS_PROMPT = (domain: string, metrics: Metrics) => `
+const LOCALE_INSTRUCTION: Record<Locale, string> = {
+  en: "",
+  fr: '\nIMPORTANT: Write the "title" and "description" values in French.',
+};
+
+const RECOMMENDATIONS_PROMPT = (domain: string, metrics: Metrics, locale: Locale = "en") => `
 You are an AI visibility expert. Analyze these metrics for "${domain}" and provide actionable recommendations.
 
 Metrics:
@@ -27,7 +33,7 @@ Rules:
 - Focus on improving AI visibility (not traditional SEO)
 - Each recommendation should be actionable and concrete
 
-Respond ONLY with valid JSON array, nothing else.
+Respond ONLY with valid JSON array, nothing else.${LOCALE_INSTRUCTION[locale]}
 `;
 
 export function parseRecommendationsResponse(content: string): Recommendation[] {
@@ -62,10 +68,11 @@ export function parseRecommendationsResponse(content: string): Recommendation[] 
 export async function generateRecommendations(
   domain: string,
   metrics: Metrics,
-  provider: AIProvider
+  provider: AIProvider,
+  locale: Locale = "en"
 ): Promise<Recommendation[]> {
   const response = await provider.query({
-    query: RECOMMENDATIONS_PROMPT(domain, metrics),
+    query: RECOMMENDATIONS_PROMPT(domain, metrics, locale),
     domain,
   });
 

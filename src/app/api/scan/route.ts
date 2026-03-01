@@ -1,7 +1,9 @@
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { validateAndSanitizeDomain } from "@/backend/validation/domain";
 import { createAIProvider } from "@/backend/lib/ai/provider";
 import { runScanPipeline } from "@/backend/services/scan/pipeline";
+import { LOCALE_COOKIE, DEFAULT_LOCALE, isValidLocale } from "@/shared/i18n";
 
 export async function POST(request: Request) {
   try {
@@ -25,8 +27,16 @@ export async function POST(request: Request) {
       );
     }
 
+    // Read locale from cookie
+    const cookieStore = await cookies();
+    const localeCookie = cookieStore.get(LOCALE_COOKIE)?.value;
+    const locale =
+      localeCookie && isValidLocale(localeCookie)
+        ? localeCookie
+        : DEFAULT_LOCALE;
+
     const provider = createAIProvider();
-    const result = await runScanPipeline(domain, provider);
+    const result = await runScanPipeline(domain, provider, locale);
 
     return NextResponse.json({
       scanId: result.scanId,

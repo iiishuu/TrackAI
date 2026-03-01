@@ -1,4 +1,5 @@
 import type { AIProvider, QueryResult, Report } from "@/shared/types";
+import type { Locale } from "@/shared/i18n/types";
 import { getSupabaseAdmin } from "@/backend/lib/supabase/client";
 import { validateAndSanitizeDomain } from "@/backend/validation/domain";
 import { discoverDomain } from "./discovery";
@@ -14,7 +15,8 @@ export interface PipelineResult {
 
 export async function runScanPipeline(
   rawDomain: string,
-  provider: AIProvider
+  provider: AIProvider,
+  locale: Locale = "en"
 ): Promise<PipelineResult> {
   const supabase = getSupabaseAdmin();
 
@@ -40,7 +42,7 @@ export async function runScanPipeline(
 
   try {
     // 3. Discovery — sector + competitors + queries
-    const discovery = await discoverDomain(domain, provider);
+    const discovery = await discoverDomain(domain, provider, locale);
 
     // 4. Execute each query via Perplexity
     // 5. Analyze each response
@@ -53,7 +55,8 @@ export async function runScanPipeline(
         query,
         aiResponse.content,
         aiResponse.sources,
-        provider
+        provider,
+        locale
       );
       queryResults.push(analyzed);
     }
@@ -65,7 +68,8 @@ export async function runScanPipeline(
     const recommendations = await generateRecommendations(
       domain,
       metrics,
-      provider
+      provider,
+      locale
     );
 
     // 8. Save report in DB

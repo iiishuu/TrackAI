@@ -1,6 +1,12 @@
 import type { AIProvider, DiscoveryResult } from "@/shared/types";
+import type { Locale } from "@/shared/i18n/types";
 
-const DISCOVERY_PROMPT = (domain: string) => `
+const LOCALE_INSTRUCTION: Record<Locale, string> = {
+  en: "",
+  fr: '\nIMPORTANT: The "sector" value and the "queries" array must be written in French.',
+};
+
+const DISCOVERY_PROMPT = (domain: string, locale: Locale = "en") => `
 Analyze the website "${domain}" and provide the following information in JSON format only (no markdown, no explanation):
 
 {
@@ -22,7 +28,7 @@ Rules:
   - Category queries ("best [sector] tools", "top [sector] companies")
   - Reputation queries ("${domain} reviews", "is ${domain} worth it?")
 
-Respond ONLY with valid JSON, nothing else.
+Respond ONLY with valid JSON, nothing else.${LOCALE_INSTRUCTION[locale]}
 `;
 
 export function parseDiscoveryResponse(content: string): DiscoveryResult {
@@ -46,10 +52,11 @@ export function parseDiscoveryResponse(content: string): DiscoveryResult {
 
 export async function discoverDomain(
   domain: string,
-  provider: AIProvider
+  provider: AIProvider,
+  locale: Locale = "en"
 ): Promise<DiscoveryResult> {
   const response = await provider.query({
-    query: DISCOVERY_PROMPT(domain),
+    query: DISCOVERY_PROMPT(domain, locale),
     domain,
   });
 

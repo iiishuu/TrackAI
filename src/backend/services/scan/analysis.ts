@@ -1,6 +1,12 @@
 import type { AIProvider, QueryResult, Sentiment } from "@/shared/types";
+import type { Locale } from "@/shared/i18n/types";
 
-const ANALYSIS_PROMPT = (domain: string, query: string, response: string) => `
+const LOCALE_INSTRUCTION: Record<Locale, string> = {
+  en: "",
+  fr: '\nIMPORTANT: The "context" value must be written in French.',
+};
+
+const ANALYSIS_PROMPT = (domain: string, query: string, response: string, locale: Locale = "en") => `
 Analyze the following AI response about "${domain}" for the query "${query}".
 
 AI Response:
@@ -25,7 +31,7 @@ Rules:
 - "competitors": other domains/brands mentioned in the response (max 5)
 - "context": the exact quote where ${domain} is mentioned. Empty string if not present
 
-Respond ONLY with valid JSON, nothing else.
+Respond ONLY with valid JSON, nothing else.${LOCALE_INSTRUCTION[locale]}
 `;
 
 const VALID_SENTIMENTS: Sentiment[] = ["positive", "neutral", "negative"];
@@ -66,10 +72,11 @@ export async function analyzeResponse(
   query: string,
   rawResponse: string,
   sources: string[],
-  provider: AIProvider
+  provider: AIProvider,
+  locale: Locale = "en"
 ): Promise<QueryResult> {
   const analysis = await provider.query({
-    query: ANALYSIS_PROMPT(domain, query, rawResponse),
+    query: ANALYSIS_PROMPT(domain, query, rawResponse, locale),
     domain,
   });
 
