@@ -6,9 +6,9 @@ export async function Navbar() {
   const t = await getServerDictionary();
 
   return (
-    <nav className="border-b">
-      <div className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4">
-        <Link href="/" className="text-lg font-bold">
+    <nav className="fixed top-0 z-50 w-full border-b border-border/50 glass">
+      <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
+        <Link href="/" className="text-lg font-bold text-gradient-primary">
           TrackAI
         </Link>
         <div className="flex items-center gap-6">
