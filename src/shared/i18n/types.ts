@@ -28,20 +28,54 @@ export interface Dictionary {
   };
 
   hero: {
+    badge: string;
     titleBefore: string;
     titleHighlight: string;
+    titleAfter: string;
     description: string;
     placeholder: string;
     analyze: string;
   };
 
+  aiLogos: {
+    title: string;
+    engines: string[];
+  };
+
   howItWorks: {
     title: string;
-    steps: Array<{ title: string; description: string }>;
+    subtitle: string;
+    steps: Array<{ icon: string; title: string; description: string }>;
+  };
+
+  features: {
+    title: string;
+    subtitle: string;
+    items: Array<{ icon: string; title: string; description: string }>;
+  };
+
+  stats: {
+    title: string;
+    subtitle: string;
+    items: Array<{ value: number; suffix: string; label: string }>;
+  };
+
+  finalCta: {
+    title: string;
+    description: string;
+    placeholder: string;
+    analyze: string;
   };
 
   footer: {
     tagline: string;
+    description: string;
+    product: string;
+    productLinks: Array<{ label: string; href: string }>;
+    resources: string;
+    resourceLinks: Array<{ label: string; href: string }>;
+    legal: string;
+    legalLinks: Array<{ label: string; href: string }>;
   };
 
   scan: {

@@ -24,28 +24,40 @@ export const fr: Dictionary = {
   },
 
   hero: {
-    titleBefore: "Suivez la visibilité de votre marque sur les ",
+    badge: "Intelligence de Visibilité IA",
+    titleBefore: "Suivez votre marque sur les ",
     titleHighlight: "moteurs de recherche IA",
+    titleAfter: " en temps réel",
     description:
-      "Découvrez comment ChatGPT, Gemini et Perplexity parlent de votre marque. Obtenez des recommandations concrètes pour améliorer votre visibilité IA.",
+      "Découvrez comment ChatGPT, Gemini et Perplexity parlent de votre marque. Obtenez des recommandations concrètes pour booster votre score de visibilité IA.",
     placeholder: "Entrez votre domaine...",
-    analyze: "Analyser",
+    analyze: "Analyser gratuitement",
+  },
+
+  aiLogos: {
+    title: "Analysez votre visibilité sur",
+    engines: ["ChatGPT", "Perplexity", "Gemini", "Copilot", "Claude"],
   },
 
   howItWorks: {
     title: "Comment ça marche",
+    subtitle:
+      "Trois étapes simples pour comprendre la présence IA de votre marque et agir.",
     steps: [
       {
+        icon: "Globe",
         title: "Entrez votre domaine",
         description:
           "Saisissez le domaine de votre marque et nous lancerons l'analyse sur plusieurs moteurs de recherche IA.",
       },
       {
+        icon: "Brain",
         title: "Analyse IA",
         description:
           "Nous interrogeons les moteurs IA avec des requêtes stratégiques liées à votre secteur et analysons comment ils référencent votre marque.",
       },
       {
+        icon: "BarChart3",
         title: "Obtenez votre rapport",
         description:
           "Recevez un score de visibilité détaillé, une analyse des métriques et des recommandations concrètes.",
@@ -53,8 +65,91 @@ export const fr: Dictionary = {
     ],
   },
 
+  features: {
+    title: "Tout ce dont vous avez besoin",
+    subtitle:
+      "Des analyses complètes de visibilité IA pour garder une longueur d'avance.",
+    items: [
+      {
+        icon: "Search",
+        title: "Analyse multi-moteurs",
+        description:
+          "Interrogez ChatGPT, Gemini et Perplexity simultanément avec des requêtes stratégiques adaptées à votre secteur.",
+      },
+      {
+        icon: "Target",
+        title: "Détection de présence",
+        description:
+          "Détectez si et où votre marque apparaît dans les réponses IA, incluant position, sentiment et contexte.",
+      },
+      {
+        icon: "TrendingUp",
+        title: "Score de visibilité",
+        description:
+          "Obtenez un score composite de 0 à 100 reflétant votre présence globale sur les moteurs de recherche IA.",
+      },
+      {
+        icon: "Users",
+        title: "Analyse concurrentielle",
+        description:
+          "Voyez quels concurrents sont mentionnés aux côtés de votre marque et leur part de voix.",
+      },
+      {
+        icon: "Lightbulb",
+        title: "Recommandations intelligentes",
+        description:
+          "Recevez des recommandations contextuelles générées par IA, spécifiques à votre secteur et vos faiblesses.",
+      },
+      {
+        icon: "LineChart",
+        title: "Suivi historique",
+        description:
+          "Suivez votre visibilité IA dans le temps et mesurez l'impact de vos efforts d'optimisation.",
+      },
+    ],
+  },
+
+  stats: {
+    title: "La confiance des marques",
+    subtitle:
+      "Nous aidons les entreprises à comprendre et améliorer leur visibilité IA.",
+    items: [
+      { value: 500, suffix: "+", label: "Scans réalisés" },
+      { value: 3, suffix: "", label: "Moteurs IA analysés" },
+      { value: 98, suffix: "%", label: "Taux de précision" },
+      { value: 24, suffix: "/7", label: "Surveillance" },
+    ],
+  },
+
+  finalCta: {
+    title: "Prêt à booster votre visibilité IA ?",
+    description:
+      "Rejoignez des centaines de marques qui suivent déjà leur présence sur les moteurs de recherche IA. Lancez votre analyse gratuite.",
+    placeholder: "Entrez votre domaine...",
+    analyze: "Analyse gratuite",
+  },
+
   footer: {
-    tagline: "TrackAI — Suivi de Visibilité IA",
+    tagline: "TrackAI",
+    description:
+      "Suivez et améliorez la visibilité de votre marque sur les moteurs de recherche IA comme ChatGPT, Gemini et Perplexity.",
+    product: "Produit",
+    productLinks: [
+      { label: "Scan IA", href: "/scan" },
+      { label: "Historique", href: "/history" },
+      { label: "Tarifs", href: "#" },
+    ],
+    resources: "Ressources",
+    resourceLinks: [
+      { label: "Documentation", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "Guide SEO IA", href: "#" },
+    ],
+    legal: "Légal",
+    legalLinks: [
+      { label: "Politique de confidentialité", href: "#" },
+      { label: "Conditions d'utilisation", href: "#" },
+    ],
   },
 
   scan: {

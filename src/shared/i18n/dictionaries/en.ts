@@ -24,28 +24,40 @@ export const en: Dictionary = {
   },
 
   hero: {
-    titleBefore: "Track Your Brand Visibility on ",
+    badge: "AI Visibility Intelligence",
+    titleBefore: "Track Your Brand on ",
     titleHighlight: "AI Search Engines",
+    titleAfter: " in Real Time",
     description:
-      "Discover how ChatGPT, Gemini, and Perplexity talk about your brand. Get actionable recommendations to improve your AI visibility.",
+      "Discover how ChatGPT, Gemini, and Perplexity talk about your brand. Get actionable recommendations to boost your AI visibility score.",
     placeholder: "Enter your domain...",
-    analyze: "Analyze",
+    analyze: "Analyze for Free",
+  },
+
+  aiLogos: {
+    title: "Analyze your visibility on",
+    engines: ["ChatGPT", "Perplexity", "Gemini", "Copilot", "Claude"],
   },
 
   howItWorks: {
     title: "How It Works",
+    subtitle:
+      "Three simple steps to understand your brand's AI presence and take action.",
     steps: [
       {
+        icon: "Globe",
         title: "Enter Your Domain",
         description:
           "Type in your brand domain and we'll start the analysis across multiple AI search engines.",
       },
       {
+        icon: "Brain",
         title: "AI Analysis",
         description:
           "We query AI engines with strategic prompts related to your sector and analyze how they reference your brand.",
       },
       {
+        icon: "BarChart3",
         title: "Get Your Report",
         description:
           "Receive a detailed visibility score, metrics breakdown, and actionable recommendations to improve.",
@@ -53,8 +65,90 @@ export const en: Dictionary = {
     ],
   },
 
+  features: {
+    title: "Everything You Need",
+    subtitle:
+      "Comprehensive AI visibility analytics to stay ahead of the competition.",
+    items: [
+      {
+        icon: "Search",
+        title: "Multi-Engine Analysis",
+        description:
+          "Query ChatGPT, Gemini, and Perplexity simultaneously with strategic prompts tailored to your industry.",
+      },
+      {
+        icon: "Target",
+        title: "Brand Presence Detection",
+        description:
+          "Detect if and where your brand appears in AI responses, including position, sentiment, and context.",
+      },
+      {
+        icon: "TrendingUp",
+        title: "Visibility Scoring",
+        description:
+          "Get a composite score from 0 to 100 that reflects your overall AI search engine presence.",
+      },
+      {
+        icon: "Users",
+        title: "Competitive Analysis",
+        description:
+          "See which competitors are mentioned alongside your brand and their share of voice.",
+      },
+      {
+        icon: "Lightbulb",
+        title: "Smart Recommendations",
+        description:
+          "Receive AI-powered, context-aware recommendations specific to your sector and weaknesses.",
+      },
+      {
+        icon: "LineChart",
+        title: "Historical Tracking",
+        description:
+          "Monitor your AI visibility over time and measure the impact of your optimization efforts.",
+      },
+    ],
+  },
+
+  stats: {
+    title: "Trusted by Brands Worldwide",
+    subtitle: "Helping businesses understand and improve their AI visibility.",
+    items: [
+      { value: 500, suffix: "+", label: "Scans Completed" },
+      { value: 3, suffix: "", label: "AI Engines Analyzed" },
+      { value: 98, suffix: "%", label: "Accuracy Rate" },
+      { value: 24, suffix: "/7", label: "Monitoring" },
+    ],
+  },
+
+  finalCta: {
+    title: "Ready to Boost Your AI Visibility?",
+    description:
+      "Join hundreds of brands already tracking their presence on AI search engines. Start your free analysis now.",
+    placeholder: "Enter your domain...",
+    analyze: "Start Free Analysis",
+  },
+
   footer: {
-    tagline: "TrackAI — AI Visibility Tracker",
+    tagline: "TrackAI",
+    description:
+      "Track and improve your brand visibility across AI search engines like ChatGPT, Gemini, and Perplexity.",
+    product: "Product",
+    productLinks: [
+      { label: "AI Scan", href: "/scan" },
+      { label: "History", href: "/history" },
+      { label: "Pricing", href: "#" },
+    ],
+    resources: "Resources",
+    resourceLinks: [
+      { label: "Documentation", href: "#" },
+      { label: "Blog", href: "#" },
+      { label: "AI SEO Guide", href: "#" },
+    ],
+    legal: "Legal",
+    legalLinks: [
+      { label: "Privacy Policy", href: "#" },
+      { label: "Terms of Service", href: "#" },
+    ],
   },
 
   scan: {
