@@ -1,10 +1,22 @@
 import type { AIProvider, QueryResult, Report } from "@/shared/types";
+import type { Locale, QueryType, ScanDepth } from "@/shared/i18n/types";
 import { getSupabaseAdmin } from "@/backend/lib/supabase/client";
 import { validateAndSanitizeDomain } from "@/backend/validation/domain";
 import { discoverDomain } from "./discovery";
 import { analyzeResponse } from "./analysis";
 import { computeMetrics } from "./scoringEngine";
 import { generateRecommendations } from "./recommendations";
+
+export interface ScanOptions {
+  depth: ScanDepth;
+  queryTypes: QueryType[];
+}
+
+const DEPTH_QUERY_COUNT: Record<ScanDepth, number> = {
+  quick: 5,
+  standard: 10,
+  deep: 20,
+};
 
 export interface PipelineResult {
   scanId: string;
@@ -14,9 +26,15 @@ export interface PipelineResult {
 
 export async function runScanPipeline(
   rawDomain: string,
-  provider: AIProvider
+  provider: AIProvider,
+  locale: Locale = "en",
+  options: ScanOptions = {
+    depth: "standard",
+    queryTypes: ["commercial", "comparative", "reputation", "informational"],
+  }
 ): Promise<PipelineResult> {
   const supabase = getSupabaseAdmin();
+  const queryCount = DEPTH_QUERY_COUNT[options.depth];
 
   // 1. Validate domain
   const validation = validateAndSanitizeDomain(rawDomain);
@@ -39,23 +57,36 @@ export async function runScanPipeline(
   const scanId = scan.id;
 
   try {
-    // 3. Discovery — sector + competitors + queries
-    const discovery = await discoverDomain(domain, provider);
+    // 3. Discovery — sector + competitors + queries (with depth and query types)
+    const discovery = await discoverDomain(
+      domain,
+      provider,
+      locale,
+      queryCount,
+      options.queryTypes
+    );
 
-    // 4. Execute each query via Perplexity
-    // 5. Analyze each response
+    // 4. Execute each query via AI provider
+    // 5. Analyze each response (batched for speed)
+    const BATCH_SIZE = 5;
     const queryResults: QueryResult[] = [];
 
-    for (const query of discovery.queries) {
-      const aiResponse = await provider.query({ query, domain });
-      const analyzed = await analyzeResponse(
-        domain,
-        query,
-        aiResponse.content,
-        aiResponse.sources,
-        provider
+    for (let i = 0; i < discovery.queries.length; i += BATCH_SIZE) {
+      const batch = discovery.queries.slice(i, i + BATCH_SIZE);
+      const batchResults = await Promise.all(
+        batch.map(async (query) => {
+          const aiResponse = await provider.query({ query, domain });
+          return analyzeResponse(
+            domain,
+            query,
+            aiResponse.content,
+            aiResponse.sources,
+            provider,
+            locale
+          );
+        })
       );
-      queryResults.push(analyzed);
+      queryResults.push(...batchResults);
     }
 
     // 6. Compute score + metrics
@@ -65,7 +96,8 @@ export async function runScanPipeline(
     const recommendations = await generateRecommendations(
       domain,
       metrics,
-      provider
+      provider,
+      locale
     );
 
     // 8. Save report in DB

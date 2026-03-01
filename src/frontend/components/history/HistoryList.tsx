@@ -10,6 +10,7 @@ import {
 } from "@/frontend/components/ui/card";
 import { Input } from "@/frontend/components/ui/input";
 import { Badge } from "@/frontend/components/ui/badge";
+import { useDictionary } from "@/frontend/components/providers/DictionaryProvider";
 import type { HistoryEntry } from "@/shared/types";
 
 function getScoreColor(score: number): string {
@@ -18,21 +19,24 @@ function getScoreColor(score: number): string {
   return "text-red-500";
 }
 
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
+const LOCALE_MAP = { en: "en-US", fr: "fr-FR" } as const;
 
 export function HistoryList() {
   const [entries, setEntries] = useState<HistoryEntry[]>([]);
   const [filter, setFilter] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t, locale } = useDictionary();
+
+  function formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString(LOCALE_MAP[locale], {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
   useEffect(() => {
     async function fetchHistory() {
@@ -41,12 +45,12 @@ export function HistoryList() {
           ? `/api/history?domain=${encodeURIComponent(filter)}`
           : "/api/history";
         const response = await fetch(url);
-        if (!response.ok) throw new Error("Failed to fetch history");
+        if (!response.ok) throw new Error(t.history.errorFetch);
         const data: HistoryEntry[] = await response.json();
         setEntries(data);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Failed to load history"
+          err instanceof Error ? err.message : t.history.errorFetch
         );
       } finally {
         setIsLoading(false);
@@ -55,20 +59,20 @@ export function HistoryList() {
 
     const timeout = setTimeout(fetchHistory, filter ? 300 : 0);
     return () => clearTimeout(timeout);
-  }, [filter]);
+  }, [filter, t.history.errorFetch]);
 
   return (
     <div className="space-y-4">
       <Input
         type="text"
-        placeholder="Filter by domain..."
+        placeholder={t.history.filterPlaceholder}
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
         className="max-w-sm"
       />
 
       {isLoading && (
-        <p className="text-sm text-muted-foreground">Loading history...</p>
+        <p className="text-sm text-muted-foreground">{t.history.loading}</p>
       )}
 
       {error && <p className="text-sm text-destructive">{error}</p>}
@@ -77,7 +81,7 @@ export function HistoryList() {
         <Card>
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground">
-              No scans yet. Start by analyzing a domain.
+              {t.history.empty}
             </p>
           </CardContent>
         </Card>

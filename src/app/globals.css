@@ -124,3 +124,87 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Gauge animation for score card */
+@keyframes gauge-fill {
+  from {
+    stroke-dashoffset: 283;
+  }
+}
+
+/* Print styles for PDF download */
+@media print {
+  nav,
+  .no-print,
+  button {
+    display: none !important;
+  }
+
+  :root {
+    color-scheme: light;
+  }
+
+  * {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  body {
+    font-size: 12px;
+  }
+
+  [data-slot="card"] {
+    box-shadow: none !important;
+    border: 1px solid #e5e5e5 !important;
+    break-inside: avoid;
+  }
+
+  /* Show all collapsible content when printing */
+  [data-state="closed"] [data-slot="collapsible-content"] {
+    display: block !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Ensure recharts SVGs render */
+  .recharts-wrapper,
+  .recharts-surface {
+    overflow: visible !important;
+  }
+
+  /* Ensure source progress bars are visible in print */
+  .bg-muted,
+  [class*="bg-primary"] {
+    background-color: inherit !important;
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* Force colored backgrounds to render */
+  .bg-green-50,
+  .bg-green-950\/20,
+  .bg-muted\/50,
+  .rounded-full[style] {
+    print-color-adjust: exact !important;
+    -webkit-print-color-adjust: exact !important;
+  }
+
+  /* Source analysis bars visibility */
+  .h-1\.5.rounded-full {
+    border: 1px solid #ccc !important;
+  }
+
+  /* Page breaks */
+  section {
+    break-inside: avoid;
+  }
+
+  h2 {
+    break-after: avoid;
+  }
+
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
+}

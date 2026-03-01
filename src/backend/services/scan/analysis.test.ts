@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import type { AIProvider } from "@/shared/types";
-import { analyzeResponse, parseAnalysisResponse } from "./analysis";
+import { analyzeResponse, parseAnalysisResponse, extractBrandName } from "./analysis";
 
 function mockProvider(content: string): AIProvider {
   return {
@@ -19,6 +19,30 @@ const VALID_ANALYSIS = JSON.stringify({
   sentiment: "positive",
   competitors: ["rival.com", "other.com"],
   context: "Example.com is a great tool for...",
+});
+
+// ----- extractBrandName -----
+
+describe("extractBrandName", () => {
+  it("extracts brand from .com domain", () => {
+    expect(extractBrandName("supabase.com")).toBe("supabase");
+  });
+
+  it("extracts brand from .io domain", () => {
+    expect(extractBrandName("mysite.io")).toBe("mysite");
+  });
+
+  it("extracts brand from .ai domain", () => {
+    expect(extractBrandName("perplexity.ai")).toBe("perplexity");
+  });
+
+  it("handles hyphenated domains", () => {
+    expect(extractBrandName("my-cool-app.dev")).toBe("my-cool-app");
+  });
+
+  it("handles unknown TLD by keeping full string", () => {
+    expect(extractBrandName("example.unknown")).toBe("example.unknown");
+  });
 });
 
 // ----- parseAnalysisResponse -----

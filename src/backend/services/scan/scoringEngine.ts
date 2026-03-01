@@ -1,10 +1,10 @@
 import type { Metrics, QueryResult, Sentiment } from "@/shared/types";
 
 const WEIGHTS = {
-  citationRate: 0.35,
-  averagePosition: 0.25,
+  citationRate: 0.4,
+  averagePosition: 0.3,
   sentiment: 0.2,
-  sourcesDiversity: 0.2,
+  sourcesDiversity: 0.1,
 } as const;
 
 const SENTIMENT_SCORES: Record<Sentiment, number> = {
