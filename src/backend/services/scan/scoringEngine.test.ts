@@ -302,6 +302,32 @@ describe("computeVisibilityScore", () => {
     const score2 = computeVisibilityScore(results);
     expect(score1).toBe(score2);
   });
+
+  it("does not penalize when position is N/A but brand is cited", () => {
+    // Brand cited in all responses, positive sentiment, but no ranked lists
+    const results = [
+      makeResult({ isPresent: true, rank: null, sentiment: "positive", sources: ["a.com"] }),
+      makeResult({ isPresent: true, rank: null, sentiment: "positive", sources: ["b.com"] }),
+    ];
+    const score = computeVisibilityScore(results);
+    // With 100% citation, positive sentiment, good diversity => should score high
+    expect(score).toBeGreaterThanOrEqual(80);
+  });
+
+  it("scores higher with position data than without when all else equal", () => {
+    const withRank = [
+      makeResult({ isPresent: true, rank: 1, sentiment: "positive", sources: ["a.com"] }),
+      makeResult({ isPresent: true, rank: 1, sentiment: "positive", sources: ["b.com"] }),
+    ];
+    const withoutRank = [
+      makeResult({ isPresent: true, rank: null, sentiment: "positive", sources: ["a.com"] }),
+      makeResult({ isPresent: true, rank: null, sentiment: "positive", sources: ["b.com"] }),
+    ];
+    // Perfect rank should still score >= no rank
+    expect(computeVisibilityScore(withRank)).toBeGreaterThanOrEqual(
+      computeVisibilityScore(withoutRank)
+    );
+  });
 });
 
 // ----- computeMetrics (integration) -----

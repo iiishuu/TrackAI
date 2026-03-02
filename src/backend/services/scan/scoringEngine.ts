@@ -112,15 +112,30 @@ export function computeVisibilityScore(results: QueryResult[]): number {
 
   const citationRate = computeCitationRate(results);
   const averagePosition = computeAveragePosition(results);
-  const positionScore = computePositionScore(averagePosition);
   const sentimentScore = computeSentimentScore(results);
   const diversityScore = computeSourcesDiversityScore(results);
 
-  const rawScore =
-    citationRate * WEIGHTS.citationRate +
-    positionScore * WEIGHTS.averagePosition +
-    sentimentScore * WEIGHTS.sentiment +
-    diversityScore * WEIGHTS.sourcesDiversity;
+  let rawScore: number;
+
+  if (averagePosition !== null) {
+    // Normal case: all 4 factors contribute
+    const positionScore = computePositionScore(averagePosition);
+    rawScore =
+      citationRate * WEIGHTS.citationRate +
+      positionScore * WEIGHTS.averagePosition +
+      sentimentScore * WEIGHTS.sentiment +
+      diversityScore * WEIGHTS.sourcesDiversity;
+  } else {
+    // No ranking data: redistribute position weight to other factors
+    // This avoids penalizing brands that are mentioned everywhere
+    // but not in numbered lists
+    const totalWithoutPosition =
+      WEIGHTS.citationRate + WEIGHTS.sentiment + WEIGHTS.sourcesDiversity;
+    rawScore =
+      citationRate * (WEIGHTS.citationRate / totalWithoutPosition) +
+      sentimentScore * (WEIGHTS.sentiment / totalWithoutPosition) +
+      diversityScore * (WEIGHTS.sourcesDiversity / totalWithoutPosition);
+  }
 
   return Math.round(rawScore * 100);
 }

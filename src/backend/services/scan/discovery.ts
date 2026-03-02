@@ -9,7 +9,7 @@ const LOCALE_INSTRUCTION: Record<Locale, string> = {
 const QUERY_TYPE_INSTRUCTIONS: Record<QueryType, string> = {
   commercial: `Commercial/transactional queries: queries a user would ask when looking for a product or service in this sector. The brand name or domain MUST appear naturally in at least half of these queries. Examples: "best [specific product/service the brand offers]", "should I use {domain}?", "{domain} pricing", "where to [action related to brand's core service]"`,
   comparative: `Comparison queries: head-to-head comparisons and alternative searches. ALWAYS include the domain. Examples: "{domain} vs [specific real competitor]", "best alternatives to {domain}", "[competitor] vs {domain} comparison"`,
-  reputation: `Reputation queries: what users ask to evaluate the brand. ALWAYS include the domain or brand name. Examples: "what do people think of {domain}?", "{domain} reviews [current year]", "is {domain} good?", "problems with {domain}"`,
+  reputation: `Reputation queries: what users ask to evaluate the brand. ALWAYS include the domain or brand name. Examples: "what do people think of {domain}?", "{domain} reviews [current year]", "is {domain} good?", "problems with {domain}". IMPORTANT: Never use the standalone word "avis" in French queries — use "opinions sur", "retours sur", or "que pensez-vous de" instead, to avoid confusion with the car rental brand Avis.`,
   informational: `Informational queries: general knowledge questions about the brand or its sector where the brand could naturally be mentioned. Examples: "what is {domain}?", "how does {domain} work?", "who owns {domain}?", "history of [brand]"`,
 };
 
