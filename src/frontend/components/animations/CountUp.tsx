@@ -25,17 +25,12 @@ export function CountUp({
   const ref = useRef<HTMLSpanElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-50px" });
   const shouldReduce = useReducedMotion();
-  const [value, setValue] = useState(0);
-  const hasAnimated = useRef(false);
+  const [value, setValue] = useState(() => (shouldReduce ? end : 0));
+  const hasAnimated = useRef(!!shouldReduce);
 
   useEffect(() => {
-    if (!isInView || hasAnimated.current) return;
+    if (!isInView || hasAnimated.current || shouldReduce) return;
     hasAnimated.current = true;
-
-    if (shouldReduce) {
-      setValue(end);
-      return;
-    }
 
     const startTime = performance.now();
     const durationMs = duration * 1000;

@@ -7,7 +7,6 @@ import { Button } from "@/frontend/components/ui/button";
 import { Input } from "@/frontend/components/ui/input";
 import { useDictionary } from "@/frontend/components/providers/DictionaryProvider";
 import { ScrollReveal } from "@/frontend/components/animations/ScrollReveal";
-import { ShinyText } from "@/frontend/components/animations/ShinyText";
 
 export function FinalCTA() {
   const [domain, setDomain] = useState("");
@@ -21,45 +20,42 @@ export function FinalCTA() {
   }
 
   return (
-    <section className="relative overflow-hidden px-4 py-32">
-      <div className="pointer-events-none absolute inset-0 bg-glow-accent" />
-      <div className="pointer-events-none absolute inset-0 bg-glow-primary" />
-
-      <div className="relative mx-auto max-w-2xl text-center">
+    <section className="bg-gray-50 px-4 py-24">
+      <div className="mx-auto max-w-2xl text-center">
         <ScrollReveal>
-          <h2 className="text-3xl font-bold md:text-5xl">
-            <ShinyText>{t.finalCta.title}</ShinyText>
+          <h2 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
+            {t.finalCta.title}
           </h2>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.2}>
-          <p className="mt-6 text-lg text-muted-foreground">
+        <ScrollReveal delay={0.1}>
+          <p className="mt-5 text-base text-gray-500">
             {t.finalCta.description}
           </p>
         </ScrollReveal>
 
-        <ScrollReveal delay={0.4}>
+        <ScrollReveal delay={0.2}>
           <form
             onSubmit={handleSubmit}
-            className="mx-auto mt-10 flex max-w-lg gap-2"
+            className="mx-auto mt-8 flex max-w-md gap-2"
           >
             <Input
               type="text"
               placeholder={t.finalCta.placeholder}
               value={domain}
               onChange={(e) => setDomain(e.target.value)}
-              className="h-12 flex-1 bg-card/50 text-base backdrop-blur-sm"
+              className="h-11 flex-1 rounded-lg border-gray-200 text-sm"
             />
             <Button
               type="submit"
               disabled={!domain.trim()}
-              size="lg"
-              className="h-12 gap-2 px-6"
+              className="h-11 gap-1.5 rounded-lg bg-gray-900 px-5 text-sm font-semibold text-white hover:bg-gray-800 disabled:opacity-40"
             >
               {t.finalCta.analyze}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-3.5 w-3.5" />
             </Button>
           </form>
+          <p className="mt-3 text-xs text-gray-400">{t.finalCta.ctaSubtext}</p>
         </ScrollReveal>
       </div>
     </section>

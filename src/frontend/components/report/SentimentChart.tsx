@@ -1,15 +1,5 @@
 "use client";
 
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
-import { Card, CardContent } from "@/frontend/components/ui/card";
 import type { QueryResult } from "@/shared/types";
 import type { Dictionary } from "@/shared/i18n/types";
 
@@ -18,11 +8,11 @@ interface SentimentChartProps {
   t: Dictionary;
 }
 
-const SENTIMENT_COLORS: Record<string, string> = {
-  positive: "hsl(142, 70%, 45%)",
-  neutral: "hsl(220, 15%, 55%)",
-  negative: "hsl(0, 70%, 50%)",
-};
+const SENTIMENT_CONFIG = [
+  { key: "positive" as const, color: "#10b981" },
+  { key: "neutral" as const, color: "#6b7280" },
+  { key: "negative" as const, color: "#ef4444" },
+];
 
 export function SentimentChart({ queryResults, t }: SentimentChartProps) {
   const counts = { positive: 0, neutral: 0, negative: 0 };
@@ -30,100 +20,72 @@ export function SentimentChart({ queryResults, t }: SentimentChartProps) {
     counts[qr.sentiment]++;
   }
 
-  const data = [
-    {
-      name: t.labels.positive,
-      value: counts.positive,
-      color: SENTIMENT_COLORS.positive,
-    },
-    {
-      name: t.labels.neutral,
-      value: counts.neutral,
-      color: SENTIMENT_COLORS.neutral,
-    },
-    {
-      name: t.labels.negative,
-      value: counts.negative,
-      color: SENTIMENT_COLORS.negative,
-    },
-  ];
-
   const total = queryResults.length;
   const presentCount = queryResults.filter((qr) => qr.isPresent).length;
 
-  return (
-    <Card>
-      <CardContent className="pt-6">
-        <div className="flex flex-col gap-6 md:flex-row">
-          {/* Bar chart */}
-          <div className="h-48 w-full md:w-1/2">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} layout="vertical" barSize={24}>
-                <XAxis type="number" hide />
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  width={70}
-                  tick={{ fontSize: 12 }}
-                />
-                <Tooltip
-                  formatter={(value) =>
-                    `${value}/${total} (${Math.round((Number(value) / total) * 100)}%)`
-                  }
-                  contentStyle={{
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                    border: "1px solid hsl(0 0% 90%)",
-                  }}
-                />
-                <Bar dataKey="value" radius={[0, 4, 4, 0]}>
-                  {data.map((entry) => (
-                    <Cell key={entry.name} fill={entry.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
+  const segments = SENTIMENT_CONFIG.map((cfg) => ({
+    ...cfg,
+    label: t.labels[cfg.key],
+    count: counts[cfg.key],
+    pct: total > 0 ? Math.round((counts[cfg.key] / total) * 100) : 0,
+  }));
 
-          {/* Summary stats */}
-          <div className="flex flex-1 flex-col justify-center gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-lg bg-green-50 p-3 text-center dark:bg-green-950/20">
-                <p className="text-2xl font-bold text-green-600">
-                  {presentCount}/{total}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {t.labels.present}
-                </p>
-              </div>
-              <div className="rounded-lg bg-muted/50 p-3 text-center">
-                <p className="text-2xl font-bold">
-                  {total - presentCount}/{total}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {t.labels.absent}
-                </p>
-              </div>
+  return (
+    <div className="rounded-xl border border-gray-200 bg-white p-5">
+      {/* Segmented progress bar */}
+      <div className="mb-6 flex h-3 w-full overflow-hidden rounded-full bg-gray-100">
+        {segments.map((seg) => {
+          const width = total > 0 ? (seg.count / total) * 100 : 0;
+          if (width === 0) return null;
+          return (
+            <div
+              key={seg.key}
+              className="h-full transition-all duration-500"
+              style={{ width: `${width}%`, backgroundColor: seg.color }}
+            />
+          );
+        })}
+      </div>
+
+      {/* Sentiment breakdown cards */}
+      <div className="mb-5 grid grid-cols-3 gap-3">
+        {segments.map((seg) => (
+          <div
+            key={seg.key}
+            className="rounded-lg border border-gray-100 p-3.5 text-center"
+          >
+            <div className="mb-1.5 flex items-center justify-center gap-2">
+              <span
+                className="h-2 w-2 rounded-full"
+                style={{ backgroundColor: seg.color }}
+              />
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                {seg.label}
+              </span>
             </div>
-            <div className="flex gap-2">
-              {data.map((d) => (
-                <div
-                  key={d.name}
-                  className="flex flex-1 items-center gap-1.5 rounded-md border p-2"
-                >
-                  <span
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: d.color }}
-                  />
-                  <span className="text-xs">
-                    {d.name}: {d.value}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <p className="text-3xl font-bold text-gray-900">{seg.count}</p>
+            <p className="mt-0.5 text-xs text-gray-400">
+              {seg.pct}% · {seg.count}/{total}
+            </p>
           </div>
+        ))}
+      </div>
+
+      {/* Present / Absent summary */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-lg bg-emerald-50 p-3 text-center">
+          <p className="text-lg font-bold text-emerald-600">
+            {presentCount}/{total}
+          </p>
+          <p className="text-xs text-gray-500">{t.labels.present}</p>
         </div>
-      </CardContent>
-    </Card>
+        <div className="rounded-lg bg-gray-50 p-3 text-center">
+          <p className="text-lg font-bold text-gray-500">
+            {total - presentCount}/{total}
+          </p>
+          <p className="text-xs text-gray-500">{t.labels.absent}</p>
+        </div>
+      </div>
+    </div>
   );
 }

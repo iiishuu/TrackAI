@@ -1,17 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useReducedMotion } from "framer-motion";
 
 export function MouseGlow() {
   const glowRef = useRef<HTMLDivElement>(null);
   const shouldReduce = useReducedMotion();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mountedRef = useRef(false);
 
   useEffect(() => {
-    if (shouldReduce || !mounted) return;
+    mountedRef.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (shouldReduce || !mountedRef.current) return;
     const glow = glowRef.current;
     if (!glow) return;
 
@@ -30,7 +32,7 @@ export function MouseGlow() {
       window.removeEventListener("mousemove", handleMove);
       document.removeEventListener("mouseleave", handleLeave);
     };
-  }, [shouldReduce, mounted]);
+  }, [shouldReduce]);
 
   if (shouldReduce) return null;
 

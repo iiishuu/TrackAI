@@ -25,6 +25,8 @@ export interface Dictionary {
   nav: {
     scan: string;
     history: string;
+    dashboard: string;
+    compare: string;
   };
 
   hero: {
@@ -33,8 +35,13 @@ export interface Dictionary {
     titleHighlight: string;
     titleAfter: string;
     description: string;
+    descPrefix: string;
+    badgeVisibility: string;
+    badgeRanking: string;
+    badgeSentiment: string;
     placeholder: string;
     analyze: string;
+    ctaSubtext: string;
   };
 
   aiLogos: {
@@ -66,6 +73,7 @@ export interface Dictionary {
     description: string;
     placeholder: string;
     analyze: string;
+    ctaSubtext: string;
   };
 
   footer: {
@@ -199,6 +207,112 @@ export interface Dictionary {
     loading: string;
     empty: string;
     errorFetch: string;
+  };
+
+  dashboard: {
+    title: string;
+    sectorLabel: string;
+    scansCount: string;
+    viewingScanFrom: string;
+    selectScan: string;
+    viewFullReport: string;
+    noScansTitle: string;
+    noScansDesc: string;
+    launchAnalysis: string;
+    newAnalysis: string;
+    analyzing: string;
+    visibilityScore: string;
+    citationRate: string;
+    citationRateSub: string;
+    avgPosition: string;
+    avgPositionSub: string;
+    sentiment: string;
+    firstScan: string;
+    visibilityOverTime: string;
+    visibilityChartLegend: string;
+    shareOfVoice: string;
+    sovSub: string;
+    competitorEvolution: string;
+    competitorEvolutionSub: string;
+    needMoreScans: string;
+    needMoreScansSub: string;
+    recommendations: string;
+    recommendationsFrom: string;
+    scanHistory: string;
+    noScansRecorded: string;
+    latest: string;
+    viewing: string;
+    report: string;
+    noData: string;
+    noCompetitorData: string;
+    dashboardUpdated: string;
+    priorityHigh: string;
+    priorityMedium: string;
+    priorityLow: string;
+    noRecommendations: string;
+    date: string;
+    score: string;
+    avgPositionHeader: string;
+    sentimentHeader: string;
+    goBack: string;
+    avgAcross: string;
+    queryTypeBreakdown: string;
+    queryTypeBreakdownSub: string;
+    queryTypeNoData: string;
+    queryCommercial: string;
+    queryComparative: string;
+    queryReputation: string;
+    queryInformational: string;
+    influenceSources: string;
+    influenceSourcesSub: string;
+    noInfluenceSources: string;
+  };
+
+  compare: {
+    title: string;
+    description: string;
+    domainA: string;
+    domainB: string;
+    placeholder: string;
+    runComparison: string;
+    comparing: string;
+    scanningBoth: string;
+    scanProgress: string;
+    waitingForResults: string;
+    noData: string;
+    noDataDesc: string;
+    scoreComparison: string;
+    metricsBreakdown: string;
+    sovOverlap: string;
+    visibilityScore: string;
+    citationRate: string;
+    avgPosition: string;
+    sentiment: string;
+    recommendations: string;
+    winner: string;
+    tie: string;
+    vs: string;
+    better: string;
+    worse: string;
+    advantageFor: string;
+    strengthsWeaknesses: string;
+    sharedCompetitors: string;
+    uniqueTo: string;
+    gapAnalysis: string;
+    metricAdvantage: string;
+    strongerOn: string;
+    weakerOn: string;
+    keyInsights: string;
+    existingScan: string;
+    newScan: string;
+    selectScan: string;
+    searchHistory: string;
+    scanDate: string;
+    score: string;
+    scanParams: string;
+    noHistory: string;
+    loadingHistory: string;
+    loadingReport: string;
   };
 
   errors: {

@@ -26,24 +26,24 @@ export function Stats() {
   }, []);
 
   return (
-    <section className="border-y border-border/50 px-4 py-24">
+    <section className="border-y border-gray-100 px-4 py-20">
       <div className="mx-auto max-w-5xl">
         <ScrollReveal>
-          <div className="mb-16 text-center">
-            <h2 className="text-3xl font-bold md:text-4xl">
+          <div className="mb-14 text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 md:text-4xl">
               {t.stats.title}
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
+            <p className="mt-3 text-base text-gray-500">
               {t.stats.subtitle}
             </p>
           </div>
         </ScrollReveal>
 
-        <div ref={ref} className="grid grid-cols-2 gap-8 md:grid-cols-4">
+        <div ref={ref} className="grid grid-cols-2 gap-10 md:grid-cols-4">
           {t.stats.items.map((stat, index) => (
-            <ScrollReveal key={index} delay={0.1 * index}>
+            <ScrollReveal key={index} delay={0.08 * index}>
               <div className="text-center">
-                <div className="flex items-center justify-center text-4xl font-bold text-primary md:text-5xl">
+                <div className="flex items-center justify-center text-4xl font-bold text-gray-900 md:text-5xl">
                   <Counter
                     value={inView ? stat.value : 0}
                     fontSize={48}
@@ -59,9 +59,7 @@ export function Stats() {
                     <span className="ml-0.5">{stat.suffix}</span>
                   )}
                 </div>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {stat.label}
-                </p>
+                <p className="mt-2 text-sm text-gray-500">{stat.label}</p>
               </div>
             </ScrollReveal>
           ))}

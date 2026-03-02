@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
+import { Geist_Mono } from "next/font/google";
 import { Navbar } from "@/frontend/components/layout/Navbar";
 import { DictionaryProvider } from "@/frontend/components/providers/DictionaryProvider";
 import { ThemeProvider } from "@/frontend/components/providers/ThemeProvider";
@@ -9,15 +10,47 @@ import {
 } from "@/shared/i18n/server";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://trackai.vercel.app";
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: "TrackAI",
+      url: BASE_URL,
+      description:
+        "Track your brand visibility across AI search engines like ChatGPT, Gemini, and Perplexity.",
+      applicationCategory: "BusinessApplication",
+      operatingSystem: "Any",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "EUR",
+      },
+    },
+    {
+      "@type": "Organization",
+      name: "TrackAI",
+      url: BASE_URL,
+      logo: `${BASE_URL}/logo.png`,
+    },
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: BASE_URL },
+        { "@type": "ListItem", position: 2, name: "Scan", item: `${BASE_URL}/scan` },
+        { "@type": "ListItem", position: 3, name: "Dashboard", item: `${BASE_URL}/dashboard` },
+        { "@type": "ListItem", position: 4, name: "Compare", item: `${BASE_URL}/compare` },
+      ],
+    },
+  ],
+};
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getServerDictionary();
@@ -37,13 +70,19 @@ export default async function RootLayout({
 
   return (
     <html lang={locale} suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <head>
+        <Script
+          id="json-ld"
+          type="application/ld+json"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
+      <body className={`${geistMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
-          enableSystem
+          defaultTheme="light"
+          enableSystem={false}
           disableTransitionOnChange
         >
           <DictionaryProvider dictionary={dictionary} locale={locale}>

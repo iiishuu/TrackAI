@@ -9,6 +9,7 @@ import { SentimentChart } from "@/frontend/components/report/SentimentChart";
 import { QueryResultCard } from "@/frontend/components/report/QueryResultCard";
 import { RecommendationList } from "@/frontend/components/report/RecommendationList";
 import { Separator } from "@/frontend/components/ui/separator";
+import { BackButton } from "@/frontend/components/ui/BackButton";
 import { getServerDictionary } from "@/shared/i18n/server";
 import type { Report } from "@/shared/types";
 
@@ -56,6 +57,9 @@ export default async function ReportPage({ params }: ReportPageProps) {
 
   return (
     <main className="mx-auto max-w-4xl space-y-8 px-4 py-8">
+      {/* Back button */}
+      <BackButton label={t.dashboard.goBack} />
+
       {/* Header */}
       <ReportHeader
         domain={report.domain}

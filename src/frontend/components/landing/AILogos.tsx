@@ -2,24 +2,37 @@
 
 import { useDictionary } from "@/frontend/components/providers/DictionaryProvider";
 import { ScrollReveal } from "@/frontend/components/animations/ScrollReveal";
-import { RotatingText } from "@/frontend/components/animations/RotatingText";
+import { LogoLoop } from "@/frontend/components/LogoLoop";
+import type { LogoItem } from "@/frontend/components/LogoLoop";
 
 export function AILogos() {
   const { t } = useDictionary();
 
+  const logos: LogoItem[] = t.aiLogos.engines.map((engine) => ({
+    node: (
+      <span className="text-sm font-medium text-gray-400 tracking-wide">
+        {engine}
+      </span>
+    ),
+    title: engine,
+  }));
+
   return (
-    <section className="relative border-y border-border/50 px-4 py-16">
-      <div className="mx-auto max-w-4xl text-center">
-        <ScrollReveal>
-          <p className="text-lg text-muted-foreground md:text-xl">
-            {t.aiLogos.title}{" "}
-            <RotatingText
-              texts={t.aiLogos.engines}
-              className="inline-block font-semibold text-foreground"
-            />
-          </p>
-        </ScrollReveal>
-      </div>
+    <section className="border-y border-gray-100 bg-gray-50/50 py-10">
+      <ScrollReveal duration={0.4}>
+        <p className="mb-6 text-center text-sm font-medium text-gray-400 uppercase tracking-widest">
+          {t.aiLogos.title}
+        </p>
+      </ScrollReveal>
+      <LogoLoop
+        logos={logos}
+        speed={60}
+        direction="left"
+        gap={72}
+        logoHeight={24}
+        pauseOnHover
+        fadeOut
+      />
     </section>
   );
 }
