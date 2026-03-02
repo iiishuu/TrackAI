@@ -11,14 +11,43 @@ export function extractBrandName(domain: string): string {
   return domain.replace(/\.(com|io|org|net|co|ai|dev|app|xyz|me|fr|de|uk|us|tech)$/i, "").toLowerCase();
 }
 
+/**
+ * Local brand detection: checks if the brand or domain appears in the text.
+ * This is a deterministic check that doesn't rely on the AI analysis.
+ */
+export function detectBrandInText(domain: string, text: string): boolean {
+  const brand = extractBrandName(domain);
+  const lower = text.toLowerCase();
+
+  // Check for exact domain match
+  if (lower.includes(domain.toLowerCase())) return true;
+
+  // Check for brand name (with word boundary awareness)
+  // For short brands (<=3 chars), require more context to avoid false positives
+  if (brand.length <= 3) {
+    const patterns = [
+      domain.toLowerCase(),
+      `${brand}.`,
+      ` ${brand} `,
+      `**${brand}**`,
+      `"${brand}"`,
+    ];
+    return patterns.some((p) => lower.includes(p));
+  }
+
+  // For longer brand names, a simple includes is reliable
+  return lower.includes(brand);
+}
+
 const ANALYSIS_PROMPT = (domain: string, query: string, response: string, locale: Locale = "en") => {
   const brand = extractBrandName(domain);
+  const capitalizedBrand = brand.charAt(0).toUpperCase() + brand.slice(1);
   return `
-Analyze the following AI response about "${domain}" for the query "${query}".
+You are analyzing whether the brand "${brand}" (domain: "${domain}") is mentioned in an AI-generated response.
 
-The brand name is "${brand}" (from domain "${domain}").
+The user query was: "${query}"
 
-AI Response:
+AI Response to analyze:
 """
 ${response}
 """
@@ -34,11 +63,13 @@ Provide your analysis in JSON format only (no markdown, no explanation):
 }
 
 Rules:
-- "isPresent": true if the brand "${brand}" OR the domain "${domain}" appears ANYWHERE in the response, in any form (e.g., "${brand}", "${domain}", "${brand}.com", capitalized "${brand[0].toUpperCase()}${brand.slice(1)}"). Be generous — if the brand name appears even once, set true.
-- "rank": the position where ${brand} appears in any list or ranking (1 = first mentioned, 2 = second, etc.). null if not in a list or not present
-- "sentiment": the overall tone about ${brand} specifically. "neutral" if factual, "positive" if recommending, "negative" if criticizing
-- "competitors": other domains/brands mentioned in the response that are NOT ${brand} (max 5)
-- "context": the FIRST exact sentence where ${brand} or ${domain} is mentioned. Empty string if not present
+- "isPresent": true if "${brand}", "${domain}", "${capitalizedBrand}", or any obvious variation of the brand name appears ANYWHERE in the response text above. Simply search the text for the word "${brand}" — if it appears even once, it is present. Do NOT confuse "${brand}" with unrelated words or brands.
+- "rank": if the response contains a numbered list or ranking, what position is "${brand}" at? (1 = first, 2 = second, etc.). null if not ranked or not present.
+- "sentiment": about "${brand}" specifically — "positive" if recommending/praising, "negative" if criticizing/warning, "neutral" if just factual/mentioned.
+- "competitors": other brands/domains mentioned that compete with "${brand}" in the same space (max 5). Use domain format when possible.
+- "context": copy the FIRST exact sentence containing "${brand}" or "${domain}". Empty string if not present.
+
+IMPORTANT: Focus ONLY on whether "${brand}" / "${domain}" appears in the text. Do not get confused by other words that look similar.
 
 Respond ONLY with valid JSON, nothing else.${LOCALE_INSTRUCTION[locale]}
 `;
@@ -126,5 +157,22 @@ export async function analyzeResponse(
     domain,
   });
 
-  return parseAnalysisResponse(analysis.content, query, rawResponse, sources);
+  const result = parseAnalysisResponse(analysis.content, query, rawResponse, sources);
+
+  // Safety net: if local detection finds the brand but the AI said absent, override
+  const locallyDetected = detectBrandInText(domain, rawResponse);
+  if (locallyDetected && !result.isPresent) {
+    result.isPresent = true;
+    if (!result.context) {
+      // Extract first sentence containing the brand
+      const brand = extractBrandName(domain);
+      const sentences = rawResponse.split(/[.!?\n]+/);
+      const match = sentences.find((s) =>
+        s.toLowerCase().includes(brand) || s.toLowerCase().includes(domain.toLowerCase())
+      );
+      result.context = match?.trim() ?? "";
+    }
+  }
+
+  return result;
 }
