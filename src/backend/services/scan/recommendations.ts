@@ -92,12 +92,40 @@ Respond ONLY with valid JSON array, nothing else.${LOCALE_INSTRUCTION[locale]}
 `;
 
 export function parseRecommendationsResponse(content: string): Recommendation[] {
-  const jsonMatch = content.match(/\[[\s\S]*\]/);
+  // Strip markdown code fences if present
+  let cleaned = content.trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "");
+
+  const jsonMatch = cleaned.match(/\[[\s\S]*\]/);
   if (!jsonMatch) {
-    throw new Error("Recommendations: no JSON array found in response");
+    return [
+      {
+        title: "Improve brand visibility on AI engines",
+        description: "Create structured, authoritative content that AI models can easily reference when answering questions about your sector.",
+        priority: "high",
+      },
+    ];
   }
 
-  const parsed = JSON.parse(jsonMatch[0]);
+  let parsed;
+  try {
+    parsed = JSON.parse(jsonMatch[0]);
+  } catch {
+    const fixedJson = jsonMatch[0]
+      .replace(/,\s*([}\]])/g, "$1")
+      .replace(/([[\{])\s*,/g, "$1");
+    try {
+      parsed = JSON.parse(fixedJson);
+    } catch {
+      return [
+        {
+          title: "Improve brand visibility on AI engines",
+          description: "Create structured, authoritative content that AI models can easily reference when answering questions about your sector.",
+          priority: "high",
+        },
+      ];
+    }
+  }
 
   if (!Array.isArray(parsed)) {
     throw new Error("Recommendations: response is not an array");

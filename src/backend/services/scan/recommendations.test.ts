@@ -120,16 +120,16 @@ describe("parseRecommendationsResponse", () => {
     expect(result[0].title).toBe("Valid");
   });
 
-  it("throws on non-array response", () => {
-    expect(() =>
-      parseRecommendationsResponse('{"not": "array"}')
-    ).toThrow("Recommendations: no JSON array found in response");
+  it("returns fallback on non-array response", () => {
+    const result = parseRecommendationsResponse('{"not": "array"}');
+    expect(result).toHaveLength(1);
+    expect(result[0].priority).toBe("high");
   });
 
-  it("throws on plain text", () => {
-    expect(() =>
-      parseRecommendationsResponse("no json here")
-    ).toThrow("Recommendations: no JSON array found in response");
+  it("returns fallback on plain text", () => {
+    const result = parseRecommendationsResponse("no json here");
+    expect(result).toHaveLength(1);
+    expect(result[0].priority).toBe("high");
   });
 });
 

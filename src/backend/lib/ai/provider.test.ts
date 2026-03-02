@@ -44,18 +44,18 @@ describe("PerplexityProvider", () => {
     expect(result.provider).toBe("perplexity");
   });
 
-  it("throws on API error", async () => {
+  it("throws on non-retryable API error", async () => {
     const mockResponse = {
       ok: false,
-      status: 429,
-      statusText: "Too Many Requests",
+      status: 403,
+      statusText: "Forbidden",
     };
 
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(mockResponse));
 
     await expect(
       provider.query({ query: "test", domain: "example.com" })
-    ).rejects.toThrow("Perplexity API error: 429 Too Many Requests");
+    ).rejects.toThrow("Perplexity API error: 403 Forbidden");
   });
 
   it("handles missing fields gracefully", async () => {

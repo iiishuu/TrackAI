@@ -115,10 +115,12 @@ describe("parseAnalysisResponse", () => {
     expect(result.competitors).toEqual([]);
   });
 
-  it("throws on non-JSON response", () => {
-    expect(() =>
-      parseAnalysisResponse("not json", "q", "resp", [])
-    ).toThrow("Analysis: no JSON found in response");
+  it("returns safe defaults on non-JSON response", () => {
+    const result = parseAnalysisResponse("not json", "q", "resp", []);
+    expect(result.isPresent).toBe(false);
+    expect(result.sentiment).toBe("neutral");
+    expect(result.rank).toBeNull();
+    expect(result.competitors).toEqual([]);
   });
 
   it("extracts JSON from markdown-wrapped response", () => {

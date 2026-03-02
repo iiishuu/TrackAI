@@ -50,12 +50,27 @@ export function parseDiscoveryResponse(
   content: string,
   queryCount: number
 ): DiscoveryResult {
-  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  // Strip markdown code fences if present (```json ... ``` or ``` ... ```)
+  let cleaned = content.trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "");
+
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    throw new Error("Discovery: no JSON found in response");
+    throw new Error(
+      `Discovery: no JSON found in response. Raw content (first 500 chars): ${content.slice(0, 500)}`
+    );
   }
 
-  const parsed = JSON.parse(jsonMatch[0]);
+  let parsed;
+  try {
+    parsed = JSON.parse(jsonMatch[0]);
+  } catch (e) {
+    // Try to fix common JSON issues: trailing commas
+    const fixedJson = jsonMatch[0]
+      .replace(/,\s*([}\]])/g, "$1")
+      .replace(/([\[{])\s*,/g, "$1");
+    parsed = JSON.parse(fixedJson);
+  }
 
   if (
     !parsed.sector ||
@@ -72,6 +87,8 @@ export function parseDiscoveryResponse(
   };
 }
 
+const DISCOVERY_MAX_RETRIES = 2;
+
 export async function discoverDomain(
   domain: string,
   provider: AIProvider,
@@ -85,6 +102,20 @@ export async function discoverDomain(
   ]
 ): Promise<DiscoveryResult> {
   const prompt = buildDiscoveryPrompt(domain, locale, queryCount, queryTypes);
-  const response = await provider.query({ query: prompt, domain });
-  return parseDiscoveryResponse(response.content, queryCount);
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= DISCOVERY_MAX_RETRIES; attempt++) {
+    try {
+      const response = await provider.query({ query: prompt, domain });
+      return parseDiscoveryResponse(response.content, queryCount);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      if (attempt < DISCOVERY_MAX_RETRIES) {
+        // Wait before retry (1s, 2s)
+        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
+      }
+    }
+  }
+
+  throw lastError ?? new Error("Discovery failed after retries");
 }

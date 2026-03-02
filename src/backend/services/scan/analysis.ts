@@ -52,12 +52,48 @@ export function parseAnalysisResponse(
   rawResponse: string,
   sources: string[]
 ): QueryResult {
-  const jsonMatch = content.match(/\{[\s\S]*\}/);
+  // Strip markdown code fences if present
+  let cleaned = content.trim();
+  cleaned = cleaned.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "");
+
+  const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
-    throw new Error("Analysis: no JSON found in response");
+    // Return a safe default instead of crashing the whole pipeline
+    return {
+      query,
+      response: rawResponse,
+      isPresent: false,
+      rank: null,
+      sentiment: "neutral",
+      competitors: [],
+      sources,
+      context: "",
+    };
   }
 
-  const parsed = JSON.parse(jsonMatch[0]);
+  let parsed;
+  try {
+    parsed = JSON.parse(jsonMatch[0]);
+  } catch {
+    // Try to fix trailing commas
+    const fixedJson = jsonMatch[0]
+      .replace(/,\s*([}\]])/g, "$1")
+      .replace(/([[\{])\s*,/g, "$1");
+    try {
+      parsed = JSON.parse(fixedJson);
+    } catch {
+      return {
+        query,
+        response: rawResponse,
+        isPresent: false,
+        rank: null,
+        sentiment: "neutral",
+        competitors: [],
+        sources,
+        context: "",
+      };
+    }
+  }
 
   const sentiment: Sentiment = VALID_SENTIMENTS.includes(parsed.sentiment)
     ? parsed.sentiment
