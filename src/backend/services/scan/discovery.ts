@@ -25,7 +25,7 @@ function buildDiscoveryPrompt(
     )
     .join("\n  - ");
 
-  const brand = domain.replace(/\.(com|io|org|net|co|ai|dev|app|xyz|me|fr|de|uk|us|tech)$/i, "").toLowerCase();
+  const brand = domain.replace(/\.(com|io|org|net|co|ai|dev|app|xyz|me|fr|de|uk|us|tech|tv|gg|live|stream|video|media|online|site|info|biz|co\.uk|com\.br|com\.au|ca|nl|be|ch|it|es|pt|jp|kr|in|ru|pl|se|no|fi|dk|at|cz|ro)$/i, "").toLowerCase();
 
   return `Analyze the website "${domain}" (brand name: "${brand}") and provide the following information in JSON format only (no markdown, no explanation):
 

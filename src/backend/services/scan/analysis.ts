@@ -6,9 +6,12 @@ const LOCALE_INSTRUCTION: Record<Locale, string> = {
   fr: '\nIMPORTANT: The "context" value must be written in French.',
 };
 
+/** Common TLDs to strip when extracting brand name from domain */
+const TLD_PATTERN = /\.(com|io|org|net|co|ai|dev|app|xyz|me|fr|de|uk|us|tech|tv|gg|live|stream|video|media|online|site|info|biz|co\.uk|com\.br|com\.au|ca|nl|be|ch|it|es|pt|jp|kr|in|ru|pl|se|no|fi|dk|at|cz|ro)$/i;
+
 export function extractBrandName(domain: string): string {
-  // "supabase.com" → "supabase", "my-app.io" → "my-app"
-  return domain.replace(/\.(com|io|org|net|co|ai|dev|app|xyz|me|fr|de|uk|us|tech)$/i, "").toLowerCase();
+  // "supabase.com" → "supabase", "twitch.tv" → "twitch", "my-app.io" → "my-app"
+  return domain.replace(TLD_PATTERN, "").toLowerCase();
 }
 
 /**
@@ -36,7 +39,16 @@ export function detectBrandInText(domain: string, text: string): boolean {
   }
 
   // For longer brand names, a simple includes is reliable
-  return lower.includes(brand);
+  if (lower.includes(brand)) return true;
+
+  // Fallback: also check domain without dots as it might appear as a word
+  // e.g. for "twitch.tv", also check for "twitch" in case TLD wasn't stripped
+  const domainParts = domain.toLowerCase().split(".");
+  if (domainParts.length > 0 && domainParts[0].length > 3) {
+    return lower.includes(domainParts[0]);
+  }
+
+  return false;
 }
 
 const ANALYSIS_PROMPT = (domain: string, query: string, response: string, locale: Locale = "en") => {

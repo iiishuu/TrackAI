@@ -36,6 +36,18 @@ describe("extractBrandName", () => {
     expect(extractBrandName("perplexity.ai")).toBe("perplexity");
   });
 
+  it("extracts brand from .tv domain", () => {
+    expect(extractBrandName("twitch.tv")).toBe("twitch");
+  });
+
+  it("extracts brand from .gg domain", () => {
+    expect(extractBrandName("discord.gg")).toBe("discord");
+  });
+
+  it("extracts brand from .live domain", () => {
+    expect(extractBrandName("trovo.live")).toBe("trovo");
+  });
+
   it("handles hyphenated domains", () => {
     expect(extractBrandName("my-cool-app.dev")).toBe("my-cool-app");
   });
